@@ -3,8 +3,8 @@ package pl.datequests.quests;
 import lombok.Getter;
 
 @Getter
-public class Quest {
+public class QuestManager {
 
-    private QuestSchema questSchema;
+
 
 }
