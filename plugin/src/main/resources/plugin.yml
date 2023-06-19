@@ -1,0 +1,6 @@
+name: DateQuests
+version: '${project.version}'
+main: pl.datequests.DateQuests
+api-version: 1.19
+authors: [Assasin98980]
+description: Add date quests to your Minecraft server

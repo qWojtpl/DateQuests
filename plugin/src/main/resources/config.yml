@@ -1,0 +1,35 @@
+quests:
+  day:
+    interval: DAY
+    questGroups:
+      0:
+        0:
+          event: break %random% stone
+          range: 1-10
+        1:
+          event: break %random% dirt
+          range: 10-15
+      1:
+        0:
+          event: kill %random% zombie
+          range: 5-10
+        1:
+          event: kill %random% cow
+          range: 5-10
+    changeQuestItem:
+      material: DIAMOND
+      amount: 1
+    rewardForEvery:
+      items:
+        0:
+          material: DIAMOND
+          amount: 1
+    rewardForAll:
+      items:
+        0:
+          material: GOLD_INGOT
+          name: "Money"
+          lore:
+            - Some money
+          amount: 1
+
