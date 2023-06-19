@@ -1,6 +1,7 @@
 package pl.datequests.data;
 
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -11,6 +12,7 @@ import java.util.List;
 public class ItemLoader {
 
     public static ItemStack getItemStack(YamlConfiguration yml, String path) {
+        path += ".";
         Material m = Material.getMaterial(yml.getString(path + "material", "DIRT").toUpperCase());
         if(m == null) {
             m = Material.DIRT;
@@ -37,7 +39,13 @@ public class ItemLoader {
     }
 
     public static List<ItemStack> getItemStackList(YamlConfiguration yml, String path) {
-        return new ArrayList<>();
+        List<ItemStack> list = new ArrayList<>();
+        int i = 0;
+        while(yml.getString(path + i + ".material") != null) {
+            list.add(getItemStack(yml, path + i));
+            i++;
+        }
+        return list;
     }
 
 }

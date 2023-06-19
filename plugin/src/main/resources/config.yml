@@ -1,5 +1,9 @@
 quests:
   day:
+    icon:
+      material: GRASS_BLOCK
+      amount: 1
+      name: "&aEasy quests"
     interval: DAY
     questGroups:
       0:

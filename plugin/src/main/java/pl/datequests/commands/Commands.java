@@ -11,7 +11,7 @@ public class Commands implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(sender instanceof Player) {
-            new QuestList((Player) sender, "test", 9);
+            new QuestList((Player) sender, "test", 54);
         }
         return true;
     }

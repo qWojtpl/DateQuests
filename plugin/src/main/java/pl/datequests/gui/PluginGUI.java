@@ -35,6 +35,7 @@ public class PluginGUI {
         this.inventorySize = inventorySize;
         inventory = plugin.getServer().createInventory(owner, inventorySize, inventoryName);
         owner.openInventory(inventory);
+        onOpen();
     }
 
     public void setSlot(int slot, Material material, String name, List<String> lore) {

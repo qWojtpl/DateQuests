@@ -32,6 +32,7 @@ public class DataHandler {
                 }
                 schema.setQuestInterval(interval);
                 schema.setChangeQuestItem(ItemLoader.getItemStack(yml, path + "changeQuestItem"));
+                schema.setIcon(ItemLoader.getItemStack(yml, path + "icon"));
                 questsManager.addQuestSchema(schema);
             }
         }

@@ -1,9 +1,17 @@
 package pl.datequests.gui.list;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import pl.datequests.DateQuests;
 import pl.datequests.gui.PluginGUI;
+import pl.datequests.quests.QuestSchema;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class QuestList extends PluginGUI {
+
+    private List<Integer> slots;
 
     public QuestList(Player owner, String inventoryName, int inventorySize) {
         super(owner, inventoryName, inventorySize);
@@ -12,17 +20,49 @@ public class QuestList extends PluginGUI {
     @Override
     public void onOpen() {
         setGUIProtected(true);
-
-    }
-
-    @Override
-    public void onClose() {
-
+        fillWith(Material.GRAY_STAINED_GLASS_PANE);
+        List<QuestSchema> schemas = DateQuests.getInstance().getQuestsManager().getQuestSchemas();
+        this.slots = new ArrayList<>();
+        int numberOfSchemas = schemas.size();
+        if(numberOfSchemas == 0) {
+            setSlot(22, Material.BARRIER, "&4No available quests", getLore("&cThere's no available quests!"));
+            return;
+        } if(numberOfSchemas == 1) {
+            slots.add(22);
+        } else if(numberOfSchemas == 2) {
+            slots.add(21);
+            slots.add(23);
+        } else if(numberOfSchemas == 3) {
+            slots.add(20);
+            slots.add(22);
+            slots.add(24);
+        } else {
+            for(int i = 0; i < numberOfSchemas; i++) {
+                slots.add(i);
+            }
+        }
+        int i = 0;
+        for(int slot : slots) {
+            setSlot(slot, schemas.get(i).getIcon());
+            i++;
+        }
     }
 
     @Override
     public void onClick(int slot) {
-
+        if(slots.contains(slot)) {
+            closeInventory();
+            int index = -1;
+            for(int i = 0; i < slots.size(); i++) {
+                if(slots.get(i).equals(slot)) {
+                    index = i;
+                }
+            }
+            if(index == -1) {
+                return;
+            }
+            new QuestPanel(getOwner(), getInventoryName(), getInventorySize(), index);
+        }
     }
 
 }
