@@ -1,7 +1,12 @@
 package pl.datequests.util;
 
+import lombok.SneakyThrows;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import static java.util.Calendar.*;
 
@@ -83,6 +88,15 @@ public class DateManager {
 
     public boolean isUsingFakeCalendar() {
         return (fakeCalendar != null);
+    }
+
+    @SneakyThrows
+    public static long calculateDays(String startDate, String endDate, String separator) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy" + separator + "MM" + separator + "dd", Locale.ENGLISH);
+        Date dStart = sdf.parse(startDate);
+        Date dEnd = sdf.parse(endDate);
+        long diffInMillies = Math.abs(dEnd.getTime() - dStart.getTime());
+        return TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
     }
 
 }
