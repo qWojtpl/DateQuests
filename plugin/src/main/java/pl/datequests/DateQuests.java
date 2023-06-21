@@ -39,7 +39,8 @@ public final class DateQuests extends JavaPlugin {
             command.setTabCompleter(commandHelper);
         }
         getServer().getPluginManager().registerEvents(events, this);
-        dataHandler.loadConfig();
+        dataHandler.loadAll();
+        questsManager.registerDateCheckTask();
         getLogger().info("Enabled!");
     }
 
@@ -48,6 +49,7 @@ public final class DateQuests extends JavaPlugin {
         if(guiManager != null) {
             guiManager.closeAllInventories();
         }
+        dataHandler.save();
         getLogger().info("Disabled.");
     }
 

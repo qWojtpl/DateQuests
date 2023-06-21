@@ -3,6 +3,7 @@ package pl.datequests.quests;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.inventory.ItemStack;
+import pl.datequests.DateQuests;
 
 import java.util.HashMap;
 
@@ -23,6 +24,7 @@ public class QuestSchema {
     public void setDateTag(String dateTag) {
         this.dateTag = dateTag;
         tagID++;
+        DateQuests.getInstance().getDataHandler().saveSchemaTags(this);
     }
 
 }

@@ -16,10 +16,6 @@ public class QuestsManager {
     private final HashMap<String, List<Quest>> quests = new HashMap<>();
     private int dateCheckTask;
 
-    public QuestsManager() {
-        registerDateCheckTask();
-    }
-
     public void addQuestSchema(QuestSchema schema) {
         questSchemas.add(schema);
     }
@@ -28,6 +24,7 @@ public class QuestsManager {
         List<Quest> playerQuests = getPlayersQuests(player);
         playerQuests.add(quest);
         quests.put(player, playerQuests);
+        plugin.getLogger().info("assigned quest: " + quest.getQuestSchema().getSchemaName() + " for " + player);
     }
 
     @Nullable
@@ -67,7 +64,7 @@ public class QuestsManager {
         return questSchemas.get(index);
     }
 
-    private void registerDateCheckTask() {
+    public void registerDateCheckTask() {
         dateCheckTask = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
             String newTag = plugin.getDateManager().getFormattedDate("%Y/%M/%D");
             for(QuestSchema schema : questSchemas) {

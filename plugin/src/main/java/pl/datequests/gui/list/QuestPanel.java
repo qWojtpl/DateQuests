@@ -53,6 +53,7 @@ public class QuestPanel extends PluginGUI {
                     getQuestsManager().assignQuest(getOwner().getName(), q);
                     closeInventory();
                     getOwner().sendMessage("Accepted quest!");
+                    q.save();
                 }
             }
         } else if(slot == 47) {
