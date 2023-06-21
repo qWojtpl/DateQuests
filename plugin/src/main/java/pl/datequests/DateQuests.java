@@ -9,11 +9,13 @@ import pl.datequests.data.DataHandler;
 import pl.datequests.events.Events;
 import pl.datequests.gui.GUIManager;
 import pl.datequests.quests.QuestsManager;
+import pl.datequests.util.DateManager;
 
 @Getter
 public final class DateQuests extends JavaPlugin {
 
     private static DateQuests main;
+    private DateManager dateManager;
     private QuestsManager questsManager;
     private GUIManager guiManager;
     private DataHandler dataHandler;
@@ -24,6 +26,7 @@ public final class DateQuests extends JavaPlugin {
     @Override
     public void onEnable() {
         main = this;
+        this.dateManager = new DateManager();
         this.questsManager = new QuestsManager();
         this.guiManager = new GUIManager();
         this.dataHandler = new DataHandler();
@@ -42,7 +45,9 @@ public final class DateQuests extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        guiManager.closeAllInventories();
+        if(guiManager != null) {
+            guiManager.closeAllInventories();
+        }
         getLogger().info("Disabled.");
     }
 

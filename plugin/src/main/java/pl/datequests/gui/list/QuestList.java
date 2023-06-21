@@ -13,8 +13,8 @@ public class QuestList extends PluginGUI {
 
     private List<Integer> slots;
 
-    public QuestList(Player owner, String inventoryName, int inventorySize) {
-        super(owner, inventoryName, inventorySize);
+    public QuestList(Player owner, String inventoryName) {
+        super(owner, inventoryName, 54);
     }
 
     @Override
@@ -61,7 +61,7 @@ public class QuestList extends PluginGUI {
             if(index == -1) {
                 return;
             }
-            new QuestPanel(getOwner(), getInventoryName(), getInventorySize(), index);
+            new QuestPanel(getOwner(), getInventoryName(), index);
         }
     }
 
