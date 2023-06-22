@@ -31,10 +31,7 @@ public class QuestsManager {
         if(p != null) {
             PlayerUtil.sendActionBarMessage(p, "§aYou scored in quest " + quest.getQuestSchema().getSchemaName());
         }
-        if(quest.getProgress() >= quest.getRequiredProgress()) {
-            quest.setQuestState(QuestState.COMPLETED);
-        }
-        quest.save();
+        quest.saveProgress();
     }
 
     public void assignQuest(String player, Quest quest) {
@@ -60,9 +57,6 @@ public class QuestsManager {
             }
             if(quest.getTagID() >= schema.getTagID()) {
                 return false;
-            } else {
-                plugin.getLogger().info(quest.getTagID() + " tagid " + schema.getTagID());
-                plugin.getLogger().info(quest.getDateTag() + " datetag " + schema.getDateTag());
             }
         }
         return true;

@@ -91,11 +91,14 @@ public class DataHandler {
                         continue;
                     }
                     for(String dateTag : questsSection.getKeys(false)) {
+                        String insidePath = "players." + nickname + "." + schemaName + "." + dateTag + ".";
                         Quest q = new Quest();
                         q.setOwner(nickname);
                         q.setQuestSchema(schema);
                         q.setDateTag(dateTag);
-                        q.setTagID(data.getInt("players." + nickname + "." + schemaName + "." + dateTag + ".tagID"));
+                        q.setTagID(data.getInt(insidePath + "tagID"));
+                        q.setEvent(data.getString(insidePath + "event", ""));
+                        q.setProgress(data.getInt(insidePath + "progress"));
                         questsManager.assignQuest(nickname, q);
                     }
                 }
@@ -125,6 +128,13 @@ public class DataHandler {
     public void saveQuest(Quest quest) {
         String path = "players." + quest.getOwner() + "." + quest.getQuestSchema().getSchemaName() + "." + quest.getDateTag() + ".";
         data.set(path + "tagID", quest.getTagID());
+        data.set(path + "event", quest.getEvent());
+        saveQuestProgress(quest);
+    }
+
+    public void saveQuestProgress(Quest quest) {
+        String path = "players." + quest.getOwner() + "." + quest.getQuestSchema().getSchemaName() + "." + quest.getDateTag() + ".";
+        data.set(path + "progress", quest.getProgress());
     }
 
     public File getConfigFile() {

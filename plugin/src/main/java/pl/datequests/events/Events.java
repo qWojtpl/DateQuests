@@ -4,6 +4,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -13,7 +14,6 @@ import pl.datequests.gui.PluginGUI;
 import pl.datequests.quests.Quest;
 import pl.datequests.quests.QuestsManager;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Events implements Listener {
@@ -31,6 +31,20 @@ public class Events implements Listener {
         List<Quest> playersActiveQuests = questsManager.getPlayersActiveQuests(player);
         for(Quest q : playersActiveQuests) {
             if(questsManager.isQuestForEvent(q, "break", event.getBlock().getType().name())) {
+                questsManager.addProgress(q, 1);
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onKill(EntityDeathEvent event) {
+        if(event.getEntity().getKiller() == null) {
+            return;
+        }
+        String player = event.getEntity().getKiller().getName();
+        List<Quest> playersActiveQuests = questsManager.getPlayersActiveQuests(player);
+        for(Quest q : playersActiveQuests) {
+            if(questsManager.isQuestForEvent(q, "kill", event.getEntity().getType().name())) {
                 questsManager.addProgress(q, 1);
             }
         }

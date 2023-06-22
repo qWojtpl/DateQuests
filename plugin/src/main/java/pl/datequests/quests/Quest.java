@@ -5,8 +5,6 @@ import lombok.Setter;
 import org.bukkit.Material;
 import pl.datequests.DateQuests;
 
-import javax.annotation.Nullable;
-
 @Getter
 @Setter
 public class Quest {
@@ -14,7 +12,6 @@ public class Quest {
     private String owner;
     private QuestSchema questSchema;
     private QuestState questState = QuestState.NOT_COMPLETED;
-    @Nullable
     private String event;
     private int progress = 0;
     private int requiredProgress = 1;
@@ -22,15 +19,12 @@ public class Quest {
     private int tagID;
 
     public void randomizeEvent() {
-        event = questSchema.getRandomEvent(owner);
+        setEvent(questSchema.getRandomEvent(owner));
         progress = 0;
-        loadRequiredProgress();
     }
 
-    public void loadRequiredProgress() {
-        if(event == null) {
-            return;
-        }
+    public void setEvent(String event) {
+        this.event = event;
         String[] split = event.split(" ");
         if(split.length != 3) {
             DateQuests.getInstance().getLogger().severe(event + " is not a correct event!");
@@ -42,6 +36,23 @@ public class Quest {
         } catch(NumberFormatException e) {
             DateQuests.getInstance().getLogger().severe(event + " is not a correct event!");
             requiredProgress = 1;
+        }
+    }
+
+    public void setTagID(int id) {
+        this.tagID = id;
+        if(this.questState.equals(QuestState.COMPLETED)) {
+            return;
+        }
+        if(id < questSchema.getTagID()) {
+            this.questState = QuestState.NOT_ACTIVE;
+        }
+    }
+
+    public void setProgress(int progress) {
+        this.progress = progress;
+        if(progress >= requiredProgress) {
+            questState = QuestState.COMPLETED;
         }
     }
 
@@ -69,6 +80,10 @@ public class Quest {
 
     public void save() {
         DateQuests.getInstance().getDataHandler().saveQuest(this);
+    }
+
+    public void saveProgress() {
+        DateQuests.getInstance().getDataHandler().saveQuestProgress(this);
     }
 
 }

@@ -8,6 +8,7 @@ import pl.datequests.gui.PluginGUI;
 import pl.datequests.gui.SortType;
 import pl.datequests.quests.Quest;
 import pl.datequests.quests.QuestSchema;
+import pl.datequests.quests.QuestState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,7 +93,18 @@ public class QuestPanel extends PluginGUI {
             if(i > slots.size() - 1) {
                 break;
             }
-            setSlot(slots.get(i), quest.getEventMaterial(), quest.getDateTag(), getLore("event: " + quest.getEvent()));
+            Material m = quest.getEventMaterial();
+            String status = "&aCOMPLETED";
+            if(quest.getQuestState().equals(QuestState.NOT_ACTIVE)) {
+                status = "&cNOT ACTIVE";
+                m = Material.RED_CONCRETE;
+            } else if(quest.getQuestState().equals(QuestState.NOT_COMPLETED)) {
+                status = "&cYou still don't completed this quest!";
+            }
+            setSlot(slots.get(i), m, quest.getDateTag(),
+                    getLore("" + quest.getEvent(),
+                            "Progress: " + quest.getProgress() + "/" + quest.getRequiredProgress(),
+                            status));
             i++;
         }
     }
