@@ -92,7 +92,7 @@ public class QuestPanel extends PluginGUI {
             if(i > slots.size() - 1) {
                 break;
             }
-            setSlot(slots.get(i), Material.GRASS_BLOCK, quest.getDateTag(), getLore("event: " + quest.getEvent()));
+            setSlot(slots.get(i), quest.getEventMaterial(), quest.getDateTag(), getLore("event: " + quest.getEvent()));
             i++;
         }
     }
