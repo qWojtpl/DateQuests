@@ -41,7 +41,6 @@ public class QuestsManager {
         List<Quest> playerQuests = getPlayersQuests(player);
         playerQuests.add(quest);
         quests.put(player, playerQuests);
-        plugin.getLogger().info("assigned quest: " + quest.getQuestSchema().getSchemaName() + " for " + player);
     }
 
     @Nullable
@@ -61,6 +60,9 @@ public class QuestsManager {
             }
             if(quest.getTagID() >= schema.getTagID()) {
                 return false;
+            } else {
+                plugin.getLogger().info(quest.getTagID() + " tagid " + schema.getTagID());
+                plugin.getLogger().info(quest.getDateTag() + " datetag " + schema.getDateTag());
             }
         }
         return true;

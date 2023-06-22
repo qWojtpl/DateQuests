@@ -3,10 +3,7 @@ package pl.datequests.data;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import pl.datequests.DateQuests;
-import pl.datequests.quests.Quest;
-import pl.datequests.quests.QuestInterval;
-import pl.datequests.quests.QuestSchema;
-import pl.datequests.quests.QuestsManager;
+import pl.datequests.quests.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,6 +40,22 @@ public class DataHandler {
                 schema.setQuestInterval(interval);
                 schema.setChangeQuestItem(ItemLoader.getItemStack(yml, path + "changeQuestItem"));
                 schema.setIcon(ItemLoader.getItemStack(yml, path + "icon"));
+                ConfigurationSection groupSection = yml.getConfigurationSection(path + "questGroups");
+                if(groupSection != null) {
+                    for(String id : groupSection.getKeys(false)) {
+                        ConfigurationSection groupQuestSection = yml.getConfigurationSection(path + "questGroups." + id);
+                        if(groupQuestSection == null) {
+                            continue;
+                        }
+                        for(String questID : groupQuestSection.getKeys(false)) {
+                            QuestGroup questGroup = new QuestGroup();
+                            String questPath = path + "questGroups." + id + "." + questID + ".";
+                            questGroup.getEvents().add(yml.getString(questPath + "event"));
+                            questGroup.getRanges().add(yml.getString(questPath + "range"));
+                            schema.getQuestGroups().add(questGroup);
+                        }
+                    }
+                }
                 questsManager.addQuestSchema(schema);
             }
         }
@@ -82,7 +95,7 @@ public class DataHandler {
                         q.setOwner(nickname);
                         q.setQuestSchema(schema);
                         q.setDateTag(dateTag);
-                        q.setTagID(data.getInt("players." + nickname + "." + schemaName + "." + dateTag));
+                        q.setTagID(data.getInt("players." + nickname + "." + schemaName + "." + dateTag + ".tagID"));
                         questsManager.assignQuest(nickname, q);
                     }
                 }

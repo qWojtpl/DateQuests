@@ -50,6 +50,7 @@ public class QuestPanel extends PluginGUI {
                     q.setQuestSchema(questSchema);
                     q.setDateTag(questSchema.getDateTag());
                     q.setTagID(questSchema.getTagID());
+                    q.randomizeEvent();
                     getQuestsManager().assignQuest(getOwner().getName(), q);
                     closeInventory();
                     getOwner().sendMessage("Accepted quest!");
@@ -91,7 +92,7 @@ public class QuestPanel extends PluginGUI {
             if(i > slots.size() - 1) {
                 break;
             }
-            setSlot(slots.get(i), Material.GRASS_BLOCK, quest.getDateTag(), getLore(""));
+            setSlot(slots.get(i), Material.GRASS_BLOCK, quest.getDateTag(), getLore("event: " + quest.getEvent()));
             i++;
         }
     }
