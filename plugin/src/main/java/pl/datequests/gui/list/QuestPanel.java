@@ -1,5 +1,6 @@
 package pl.datequests.gui.list;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -23,10 +24,10 @@ public class QuestPanel extends PluginGUI {
     public QuestPanel(Player owner, String inventoryName, int questIndex) {
         super(owner, inventoryName, 54);
         this.questIndex = questIndex;
+        onLoad();
     }
 
-    @Override
-    public void onOpen() {
+    public void onLoad() {
         questSchema = getQuestsManager().getSchemaFromIndex(questIndex);
         setGUIProtected(true);
         fillWith(Material.BLACK_STAINED_GLASS_PANE);

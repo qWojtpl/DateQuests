@@ -3,6 +3,7 @@ package pl.datequests.quests;
 import lombok.Getter;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import pl.datequests.DateQuests;
@@ -152,7 +153,7 @@ public class QuestsManager {
 
     @Nullable
     public QuestSchema getSchemaFromIndex(int index) {
-        if(questSchemas.size() - 1 > index) {
+        if(index > questSchemas.size() - 1) {
             return null;
         }
         return questSchemas.get(index);
