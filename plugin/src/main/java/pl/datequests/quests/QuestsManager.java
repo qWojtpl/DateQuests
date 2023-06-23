@@ -58,10 +58,7 @@ public class QuestsManager {
     }
 
     public boolean isPlayerCanTakeQuest(String player, QuestSchema schema) {
-        for(Quest quest : getPlayersQuests(player)) {
-            if(!quest.getQuestSchema().equals(schema)) {
-                continue;
-            }
+        for(Quest quest : getPlayersQuestsBySchema(player, schema)) {
             if(quest.getTagID() >= schema.getTagID()) {
                 return false;
             }
@@ -88,13 +85,23 @@ public class QuestsManager {
         return new ArrayList<>();
     }
 
-    public List<Quest> getPlayersQuests(String player, SortType sortType) {
+    public List<Quest> getPlayersQuestsBySchema(String player, QuestSchema schema) {
+        List<Quest> returnList = new ArrayList<>();
+        for(Quest quest : getPlayersQuests(player)) {
+            if(quest.getQuestSchema().equals(schema)) {
+                returnList.add(quest);
+            }
+        }
+        return returnList;
+    }
+
+    public List<Quest> getSortedQuests(List<Quest> questList, SortType sortType) {
         if(sortType.equals(SortType.NEWEST)) {
-            return reverseList(getPlayersQuests(player));
+            return reverseList(questList);
         } else if(sortType.equals(SortType.OLDEST)) {
-            return new ArrayList<>(getPlayersQuests(player));
+            return new ArrayList<>(questList);
         } else if(sortType.equals(SortType.COMPLETED)) {
-            List<Quest> playerQuests = reverseList(getPlayersQuests(player));
+            List<Quest> playerQuests = reverseList(questList);
             List<Quest> sortedQuests = new ArrayList<>();
             for(Quest quest : playerQuests) {
                 if(quest.getQuestState().equals(QuestState.COMPLETED)) {
@@ -108,7 +115,7 @@ public class QuestsManager {
             }
             return sortedQuests;
         } else {
-            List<Quest> playerQuests = reverseList(getPlayersQuests(player));
+            List<Quest> playerQuests = reverseList(questList);
             List<Quest> sortedQuests = new ArrayList<>();
             for(Quest quest : playerQuests) {
                 if(quest.getQuestState().equals(QuestState.NOT_COMPLETED)) {

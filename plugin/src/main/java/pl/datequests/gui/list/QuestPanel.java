@@ -83,7 +83,10 @@ public class QuestPanel extends PluginGUI {
                 i++;
             }
         }
-        for(Quest quest : getQuestsManager().getPlayersQuests(getOwner().getName(), currentSortType)) {
+        List<Quest> questList = getQuestsManager().getSortedQuests(
+                getQuestsManager().getPlayersQuestsBySchema(getOwner().getName(), questSchema),
+                currentSortType);
+        for(Quest quest : questList) {
             if(currentOffset > i) {
                 i++;
                 continue;
@@ -108,7 +111,7 @@ public class QuestPanel extends PluginGUI {
     }
 
     private void nextPage() {
-        if(getQuestsManager().getPlayersQuests(getOwner().getName()).size() < currentOffset + 36) {
+        if(getQuestsManager().getPlayersQuestsBySchema(getOwner().getName(), questSchema).size() < currentOffset + 36) {
             return;
         }
         getOwner().playSound(getOwner(), Sound.ITEM_BOOK_PAGE_TURN, 1.0F, 1.0F);
