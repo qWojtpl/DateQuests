@@ -3,8 +3,10 @@ package pl.datequests.quests;
 import lombok.Getter;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import pl.datequests.DateQuests;
+import pl.datequests.gui.SortType;
 import pl.datequests.util.PlayerUtil;
 
 import javax.annotation.Nullable;
@@ -26,10 +28,15 @@ public class QuestsManager {
         if(!quest.getQuestState().equals(QuestState.NOT_COMPLETED)) {
             return;
         }
-        quest.setProgress(quest.getProgress() + progress);
+        boolean completed = quest.setProgress(quest.getProgress() + progress);
         Player p = PlayerUtil.getPlayer(quest.getOwner());
         if(p != null) {
-            PlayerUtil.sendActionBarMessage(p, "§aYou scored in quest " + quest.getQuestSchema().getSchemaName());
+            if(completed) {
+                p.playSound(p, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.0F);
+                PlayerUtil.sendActionBarMessage(p, "§aYou completed quest " + quest.getQuestSchema().getSchemaName());
+            } else {
+                PlayerUtil.sendActionBarMessage(p, "§aYou scored in quest " + quest.getQuestSchema().getSchemaName());
+            }
         }
         quest.saveProgress();
     }
@@ -81,6 +88,50 @@ public class QuestsManager {
         return new ArrayList<>();
     }
 
+    public List<Quest> getPlayersQuests(String player, SortType sortType) {
+        if(sortType.equals(SortType.NEWEST)) {
+            return reverseList(getPlayersQuests(player));
+        } else if(sortType.equals(SortType.OLDEST)) {
+            return new ArrayList<>(getPlayersQuests(player));
+        } else if(sortType.equals(SortType.COMPLETED)) {
+            List<Quest> playerQuests = reverseList(getPlayersQuests(player));
+            List<Quest> sortedQuests = new ArrayList<>();
+            for(Quest quest : playerQuests) {
+                if(quest.getQuestState().equals(QuestState.COMPLETED)) {
+                    sortedQuests.add(quest);
+                }
+            }
+            for(Quest quest : playerQuests) {
+                if(!quest.getQuestState().equals(QuestState.COMPLETED)) {
+                    sortedQuests.add(quest);
+                }
+            }
+            return sortedQuests;
+        } else {
+            List<Quest> playerQuests = reverseList(getPlayersQuests(player));
+            List<Quest> sortedQuests = new ArrayList<>();
+            for(Quest quest : playerQuests) {
+                if(quest.getQuestState().equals(QuestState.NOT_COMPLETED)) {
+                    sortedQuests.add(quest);
+                }
+            }
+            for(Quest quest : playerQuests) {
+                if(!quest.getQuestState().equals(QuestState.NOT_COMPLETED)) {
+                    sortedQuests.add(quest);
+                }
+            }
+            return sortedQuests;
+        }
+    }
+
+    public List<Quest> reverseList(List<Quest> list) {
+        List<Quest> returnList = new ArrayList<>();
+        for(int i = list.size() - 1; i >= 0; i--) {
+            returnList.add(list.get(i));
+        }
+        return returnList;
+    }
+
     public List<Quest> getPlayersActiveQuests(String player) {
         List<Quest> playerQuests = getPlayersQuests(player);
         List<Quest> activeQuests = new ArrayList<>();
@@ -110,16 +161,24 @@ public class QuestsManager {
                 if(newTag.equals(schema.getDateTag())) {
                     continue;
                 }
+                boolean changedTag = false;
                 if(QuestInterval.DAY.equals(schema.getQuestInterval())) {
                     schema.setDateTag(newTag);
+                    changedTag = true;
                 } else if(QuestInterval.MONTH.equals(schema.getQuestInterval())) {
                     if(newTag.equals(plugin.getDateManager().getFormattedDate("%Y/%M/1"))) {
                         schema.setDateTag(newTag);
+                        changedTag = true;
                     }
                 } else {
                     if(plugin.getDateManager().getDayName().equalsIgnoreCase(schema.getQuestInterval().name())) {
                         schema.setDateTag(newTag);
+                        changedTag = true;
                     }
+                }
+                if(changedTag) {
+                    schema.setTagID(schema.getTagID() + 1);
+                    DateQuests.getInstance().getDataHandler().saveSchemaTags(schema);
                 }
             }
         }, 0L, 20L);

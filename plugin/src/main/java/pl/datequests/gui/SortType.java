@@ -20,4 +20,17 @@ public enum SortType {
         return NEWEST;
     }
 
+    public static int getIndex(SortType sortType) {
+        if(sortType.equals(NEWEST)) {
+            return 0;
+        }
+        if(sortType.equals(OLDEST)) {
+            return 1;
+        }
+        if(sortType.equals(COMPLETED)) {
+            return 2;
+        }
+        return 3;
+    }
+
 }

@@ -2,6 +2,7 @@ package pl.datequests.quests;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import pl.datequests.DateQuests;
 
@@ -49,11 +50,18 @@ public class Quest {
         }
     }
 
-    public void setProgress(int progress) {
+    /**
+        Returns true if quest is completed
+        @param progress Progress to add
+        @return True or false
+     */
+    public boolean setProgress(int progress) {
         this.progress = progress;
         if(progress >= requiredProgress) {
             questState = QuestState.COMPLETED;
+            return true;
         }
+        return false;
     }
 
     public Material getEventMaterial() {

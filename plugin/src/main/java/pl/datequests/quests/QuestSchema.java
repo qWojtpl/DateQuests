@@ -25,8 +25,6 @@ public class QuestSchema {
 
     public void setDateTag(String dateTag) {
         this.dateTag = dateTag;
-        tagID++;
-        DateQuests.getInstance().getDataHandler().saveSchemaTags(this);
     }
 
     public String getRandomEvent(String player) {

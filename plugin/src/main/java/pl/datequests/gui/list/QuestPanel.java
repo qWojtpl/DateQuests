@@ -3,7 +3,6 @@ package pl.datequests.gui.list;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import pl.datequests.DateQuests;
 import pl.datequests.gui.PluginGUI;
 import pl.datequests.gui.SortType;
 import pl.datequests.quests.Quest;
@@ -36,7 +35,6 @@ public class QuestPanel extends PluginGUI {
         setSlot(9, Material.OAK_SIGN, "Category stats", getLore("Completed quests: 0", "Quests assigned: 12"));
         setSlot(18, Material.CHEST, "Rewards", getLore("Get your rewards!"));
         setSlot(47, Material.ARROW, "§f§lPrevious page", getLore("Go to previous page"));
-        setSlot(50, Material.HOPPER, "§f§lSort", getLore("Now sorted by:", " -> §a§lNEWEST ASSIGNED", " §aOLDEST ASSIGNED", " §aCOMPLETED", " §aNOT COMPLETED"));
         setSlot(53, Material.ARROW, "§f§lNext page", getLore("Go to next page"));
         changeSortType();
     }
@@ -85,7 +83,7 @@ public class QuestPanel extends PluginGUI {
                 i++;
             }
         }
-        for(Quest quest : getQuestsManager().getPlayersQuests(getOwner().getName())) {
+        for(Quest quest : getQuestsManager().getPlayersQuests(getOwner().getName(), currentSortType)) {
             if(currentOffset > i) {
                 i++;
                 continue;
@@ -94,12 +92,12 @@ public class QuestPanel extends PluginGUI {
                 break;
             }
             Material m = quest.getEventMaterial();
-            String status = "&aCOMPLETED";
+            String status = "§aCOMPLETED";
             if(quest.getQuestState().equals(QuestState.NOT_ACTIVE)) {
-                status = "&cNOT ACTIVE";
+                status = "§cNOT ACTIVE";
                 m = Material.RED_CONCRETE;
             } else if(quest.getQuestState().equals(QuestState.NOT_COMPLETED)) {
-                status = "&cYou still don't completed this quest!";
+                status = "§cYou still don't completed this quest!";
             }
             setSlot(slots.get(i), m, quest.getDateTag(),
                     getLore("" + quest.getEvent(),
@@ -133,6 +131,12 @@ public class QuestPanel extends PluginGUI {
         } else {
             currentSortType = SortType.getNext(currentSortType);
         }
+        int index = SortType.getIndex(currentSortType);
+        setSlot(50, Material.HOPPER, "§f§lSort", getLore("Now sorted by:",
+                (index == 0 ? "§a§l" : "§6") + " NEWEST ASSIGNED",
+                (index == 1 ? "§a§l" : "§6") + " OLDEST ASSIGNED",
+                (index == 2 ? "§a§l" : "§6") + " COMPLETED",
+                (index == 3 ? "§a§l" : "§6") + " NOT COMPLETED"));
         currentOffset = 0;
         loadQuests();
     }

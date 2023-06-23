@@ -1,5 +1,6 @@
 package pl.datequests.data;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import pl.datequests.DateQuests;
@@ -22,6 +23,7 @@ public class DataHandler {
 
     public void loadConfig() {
         questsManager.getQuestSchemas().clear();
+        questsManager.getQuests().clear();
         YamlConfiguration yml = YamlConfiguration.loadConfiguration(getConfigFile());
         ConfigurationSection questsSection = yml.getConfigurationSection("quests");
         if(questsSection != null) {
