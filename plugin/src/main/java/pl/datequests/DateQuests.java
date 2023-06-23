@@ -6,6 +6,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import pl.datequests.commands.CommandHelper;
 import pl.datequests.commands.Commands;
 import pl.datequests.data.DataHandler;
+import pl.datequests.data.MessagesManager;
 import pl.datequests.events.Events;
 import pl.datequests.gui.GUIManager;
 import pl.datequests.quests.QuestsManager;
@@ -18,6 +19,7 @@ public final class DateQuests extends JavaPlugin {
     private DateManager dateManager;
     private QuestsManager questsManager;
     private GUIManager guiManager;
+    private MessagesManager messagesManager;
     private DataHandler dataHandler;
     private Commands commands;
     private CommandHelper commandHelper;
@@ -29,6 +31,7 @@ public final class DateQuests extends JavaPlugin {
         this.dateManager = new DateManager();
         this.questsManager = new QuestsManager();
         this.guiManager = new GUIManager();
+        this.messagesManager = new MessagesManager();
         this.dataHandler = new DataHandler();
         this.commands = new Commands();
         this.commandHelper = new CommandHelper();

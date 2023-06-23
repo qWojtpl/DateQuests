@@ -109,7 +109,15 @@ public class DataHandler {
     }
 
     public void loadMessages() {
-
+        YamlConfiguration yml = YamlConfiguration.loadConfiguration(getMessagesFile());
+        ConfigurationSection messagesSection = yml.getConfigurationSection("messages");
+        if(messagesSection == null) {
+            return;
+        }
+        MessagesManager messagesManager = plugin.getMessagesManager();
+        for(String key : messagesSection.getKeys(false)) {
+            messagesManager.addMessage(key, yml.getString("messages." + key));
+        }
     }
 
     public void save() {
@@ -145,6 +153,10 @@ public class DataHandler {
 
     public File getDataFile() {
         return getFile("data.yml");
+    }
+
+    public File getMessagesFile() {
+        return getFile("messages.yml");
     }
 
     public File getFile(String resourceName) {

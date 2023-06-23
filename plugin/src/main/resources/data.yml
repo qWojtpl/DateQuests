@@ -1,1 +1,8 @@
+#
+# It's not good to edit this file manually.
+# But if you want edit this file and do it on runtime,
+# please reload configuration using /dq reload --skipsave
+# Normal /dq reload will save existing data to this file
+#
+
 data: {}

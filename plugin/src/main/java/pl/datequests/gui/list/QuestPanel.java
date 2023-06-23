@@ -79,7 +79,7 @@ public class QuestPanel extends PluginGUI {
         int i = 0;
         if(currentOffset == 0) {
             if(getQuestsManager().isPlayerCanTakeQuest(getOwner().getName(), questSchema)) {
-                setSlot(slots.get(i), Material.GRASS_BLOCK, "New quest", getLore("Click to accept"));
+                setSlot(slots.get(i), Material.POPPY, "New quest", getLore("Click to accept"));
                 setSlotEnchanted(slots.get(i), true);
                 i++;
             }
