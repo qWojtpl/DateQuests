@@ -20,9 +20,9 @@ public class QuestSchema {
     private ItemStack icon;
     private String dateTag;
     private int tagID;
+    private RewardType rewardType;
     private final List<QuestGroup> questGroups = new ArrayList<>();
-    private final List<ItemStack> rewardForEvery = new ArrayList<>();
-    private final List<ItemStack> rewardForAll = new ArrayList<>();
+    private final List<ItemStack> rewards = new ArrayList<>();
     private final HashMap<String, Integer> lastPlayerGroup = new HashMap<>();
 
     public void setDateTag(String dateTag) {

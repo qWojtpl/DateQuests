@@ -1,9 +1,9 @@
 package pl.datequests.quests;
 
 import lombok.Getter;
-import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import pl.datequests.DateQuests;
 import pl.datequests.gui.SortType;
 import pl.datequests.util.PlayerUtil;
@@ -17,6 +17,7 @@ public class QuestsManager {
     private final DateQuests plugin = DateQuests.getInstance();
     private final List<QuestSchema> questSchemas = new ArrayList<>();
     private final HashMap<String, List<Quest>> quests = new HashMap<>();
+    private final HashMap<String, List<ItemStack>> rewards = new HashMap<>();
     private int dateCheckTask = -1;
 
     public void addQuestSchema(QuestSchema schema) {
@@ -44,6 +45,12 @@ public class QuestsManager {
         List<Quest> playerQuests = getPlayersQuests(player);
         playerQuests.add(quest);
         quests.put(player, playerQuests);
+    }
+
+    public void assignReward(String player, ItemStack itemStack) {
+        List<ItemStack> playerRewards = getPlayersRewards(player);
+        playerRewards.add(itemStack);
+        rewards.put(player, playerRewards);
     }
 
     public boolean takeQuest(String player, QuestSchema schema) {
@@ -101,6 +108,13 @@ public class QuestsManager {
             return false;
         }
         return split[0].equalsIgnoreCase(event) && split[2].equalsIgnoreCase(subject);
+    }
+
+    public List<ItemStack> getPlayersRewards(String player) {
+        if(rewards.containsKey(player)) {
+            return rewards.get(player);
+        }
+        return new ArrayList<>();
     }
 
     public List<Quest> getPlayersQuests(String player) {

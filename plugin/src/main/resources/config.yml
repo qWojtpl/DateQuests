@@ -41,17 +41,15 @@ quests:
     changeQuestItem:
       material: DIAMOND
       amount: 1
-    rewardForEvery:
+    reward:
+      type: RANDOM
       items:
         0:
           material: DIAMOND
           amount: 1
-    rewardForAll:
-      items:
-        0:
-          material: GOLD_INGOT
-          name: "Money"
-          lore:
-            - Some money
-          amount: 1
+
+everythingInMonthReward:
+  0:
+    material: DIAMOND
+    amount: 64
 

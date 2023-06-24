@@ -4,7 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 import pl.datequests.DateQuests;
+import pl.datequests.util.RandomNumber;
 
 @Getter
 @Setter
@@ -61,6 +63,17 @@ public class Quest {
         this.progress = progress;
         if(progress >= requiredProgress) {
             questState = QuestState.COMPLETED;
+            if(questSchema.getRewards().size() == 0) {
+                return true;
+            }
+            if(questSchema.getRewardType().equals(RewardType.ALL)) {
+                for(ItemStack is : questSchema.getRewards()) {
+                    DateQuests.getInstance().getQuestsManager().assignReward(owner, is);
+                }
+            } else if(questSchema.getRewardType().equals(RewardType.RANDOM)) {
+                DateQuests.getInstance().getQuestsManager().assignReward(owner,
+                        questSchema.getRewards().get(RandomNumber.randomInt(0, questSchema.getRewards().size())));
+            }
             return true;
         }
         return false;

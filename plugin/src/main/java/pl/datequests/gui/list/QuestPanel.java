@@ -41,7 +41,7 @@ public class QuestPanel extends PluginGUI {
         setSlot(0, Material.BOOK, "Quest assign", getLore("New quests will assign every: " + questSchema.getQuestInterval().name()));
         setSlot(9, Material.OAK_SIGN, "Category stats", getLore(
                 "Completed quests: " + completed,
-                "Quests assigned: " + getQuestsManager().getPlayersQuestsBySchema(getOwner().getName(), questSchema)));
+                "Quests assigned: " + getQuestsManager().getPlayersQuestsBySchema(getOwner().getName(), questSchema).size()));
         setSlot(18, Material.CHEST, "Rewards", getLore("Get your rewards!"));
         setSlot(47, Material.ARROW, "§f§lPrevious page", getLore("Go to previous page"));
         setSlot(53, Material.ARROW, "§f§lNext page", getLore("Go to next page"));
