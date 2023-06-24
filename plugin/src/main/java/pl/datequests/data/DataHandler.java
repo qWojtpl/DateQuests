@@ -1,19 +1,26 @@
 package pl.datequests.data;
 
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import pl.datequests.DateQuests;
 import pl.datequests.quests.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+@Getter
 public class DataHandler {
 
     private final DateQuests plugin = DateQuests.getInstance();
     private final QuestsManager questsManager = plugin.getQuestsManager();
     private YamlConfiguration data;
+    private boolean loadAllPlayers;
+    private final List<String> playerLoaded = new ArrayList<>();
 
     public void loadAll() {
         loadConfig();
@@ -25,6 +32,7 @@ public class DataHandler {
         questsManager.getQuestSchemas().clear();
         questsManager.getQuests().clear();
         YamlConfiguration yml = YamlConfiguration.loadConfiguration(getConfigFile());
+        loadAllPlayers = yml.getBoolean("config.loadAllPlayers");
         ConfigurationSection questsSection = yml.getConfigurationSection("quests");
         if(questsSection != null) {
             for(String questName : questsSection.getKeys(false)) {
@@ -64,6 +72,7 @@ public class DataHandler {
     }
 
     public void loadData() {
+        playerLoaded.clear();
         data = YamlConfiguration.loadConfiguration(getDataFile());
         ConfigurationSection schemaSection = data.getConfigurationSection("schema");
         if(schemaSection != null) {
@@ -76,34 +85,48 @@ public class DataHandler {
                 }
             }
         }
+        if(!loadAllPlayers) {
+            for(Player p : plugin.getServer().getOnlinePlayers()) {
+                loadPlayer(p.getName());
+            }
+            return;
+        }
         ConfigurationSection playerSection = data.getConfigurationSection("players");
         if(playerSection != null) {
             for(String nickname : playerSection.getKeys(false)) {
-                ConfigurationSection schemaNameSection = data.getConfigurationSection("players." + nickname);
-                if(schemaNameSection == null) {
-                    continue;
-                }
-                for(String schemaName : schemaNameSection.getKeys(false)) {
-                    QuestSchema schema = questsManager.getQuestSchema(schemaName);
-                    if(schema == null) {
-                        continue;
-                    }
-                    ConfigurationSection questsSection = data.getConfigurationSection("players." + nickname + "." + schemaName);
-                    if(questsSection == null) {
-                        continue;
-                    }
-                    for(String dateTag : questsSection.getKeys(false)) {
-                        String insidePath = "players." + nickname + "." + schemaName + "." + dateTag + ".";
-                        Quest q = new Quest();
-                        q.setOwner(nickname);
-                        q.setQuestSchema(schema);
-                        q.setDateTag(dateTag);
-                        q.setTagID(data.getInt(insidePath + "tagID"));
-                        q.setEvent(data.getString(insidePath + "event", ""));
-                        q.setProgress(data.getInt(insidePath + "progress"));
-                        questsManager.assignQuest(nickname, q);
-                    }
-                }
+                loadPlayer(nickname);
+            }
+        }
+    }
+
+    public void loadPlayer(String nickname) {
+        if(playerLoaded.contains(nickname)) {
+            return;
+        }
+        playerLoaded.add(nickname);
+        ConfigurationSection schemaNameSection = data.getConfigurationSection("players." + nickname);
+        if(schemaNameSection == null) {
+            return;
+        }
+        for(String schemaName : schemaNameSection.getKeys(false)) {
+            QuestSchema schema = questsManager.getQuestSchema(schemaName);
+            if(schema == null) {
+                continue;
+            }
+            ConfigurationSection questsSection = data.getConfigurationSection("players." + nickname + "." + schemaName);
+            if(questsSection == null) {
+                continue;
+            }
+            for(String dateTag : questsSection.getKeys(false)) {
+                String insidePath = "players." + nickname + "." + schemaName + "." + dateTag + ".";
+                Quest q = new Quest();
+                q.setOwner(nickname);
+                q.setQuestSchema(schema);
+                q.setDateTag(dateTag);
+                q.setTagID(data.getInt(insidePath + "tagID"));
+                q.setEvent(data.getString(insidePath + "event", ""));
+                q.setProgress(data.getInt(insidePath + "progress"));
+                questsManager.assignQuest(nickname, q);
             }
         }
     }

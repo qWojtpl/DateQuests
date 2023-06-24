@@ -8,6 +8,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import pl.datequests.DateQuests;
 import pl.datequests.gui.GUIManager;
 import pl.datequests.gui.PluginGUI;
@@ -21,6 +22,13 @@ public class Events implements Listener {
     private final DateQuests plugin = DateQuests.getInstance();
     private final QuestsManager questsManager = plugin.getQuestsManager();
     private final GUIManager guiManager = plugin.getGuiManager();
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        if(!plugin.getDataHandler().isLoadAllPlayers()) {
+            plugin.getDataHandler().loadPlayer(event.getPlayer().getName());
+        }
+    }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBreak(BlockBreakEvent event) {

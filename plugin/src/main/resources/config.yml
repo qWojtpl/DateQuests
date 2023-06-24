@@ -9,6 +9,13 @@
 # Author: Assasin98980
 #
 
+config:
+
+  # When set to true plugin on startup will load all players from data.yml
+  # When set to false player data will be downloaded when player will join the server
+  # May affect performance (depends on player count saved in data.yml)
+  loadAllPlayers: false
+
 quests:
   day:
     icon:
