@@ -32,8 +32,16 @@ public class QuestPanel extends PluginGUI {
         setGUIProtected(true);
         fillWith(Material.BLACK_STAINED_GLASS_PANE);
         currentOffset = 0;
+        int completed = 0;
+        for(Quest q : getQuestsManager().getPlayersQuestsBySchema(getOwner().getName(), questSchema)) {
+            if(q.getQuestState().equals(QuestState.COMPLETED)) {
+                completed++;
+            }
+        }
         setSlot(0, Material.BOOK, "Quest assign", getLore("New quests will assign every: " + questSchema.getQuestInterval().name()));
-        setSlot(9, Material.OAK_SIGN, "Category stats", getLore("Completed quests: 0", "Quests assigned: 12"));
+        setSlot(9, Material.OAK_SIGN, "Category stats", getLore(
+                "Completed quests: " + completed,
+                "Quests assigned: " + getQuestsManager().getPlayersQuestsBySchema(getOwner().getName(), questSchema)));
         setSlot(18, Material.CHEST, "Rewards", getLore("Get your rewards!"));
         setSlot(47, Material.ARROW, "§f§lPrevious page", getLore("Go to previous page"));
         setSlot(53, Material.ARROW, "§f§lNext page", getLore("Go to next page"));
@@ -44,17 +52,8 @@ public class QuestPanel extends PluginGUI {
     public void onClick(int slot) {
         if(slot == slots.get(0)) {
             if(currentOffset == 0) {
-                if(getQuestsManager().isPlayerCanTakeQuest(getOwner().getName(), questSchema)) {
-                    Quest q = new Quest();
-                    q.setOwner(getOwner().getName());
-                    q.setQuestSchema(questSchema);
-                    q.setDateTag(questSchema.getDateTag());
-                    q.setTagID(questSchema.getTagID());
-                    q.randomizeEvent();
-                    getQuestsManager().assignQuest(getOwner().getName(), q);
+                if(getQuestsManager().takeQuest(getOwner().getName(), questSchema)) {
                     closeInventory();
-                    getOwner().sendMessage("Accepted quest!");
-                    q.save();
                 }
             }
         } else if(slot == 47) {

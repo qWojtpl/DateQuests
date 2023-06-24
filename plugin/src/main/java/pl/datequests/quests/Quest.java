@@ -30,6 +30,7 @@ public class Quest {
         if(split.length != 3) {
             DateQuests.getInstance().getLogger().severe(event + " is not a correct event!");
             requiredProgress = 1;
+            this.event = "break 1 bedrock";
             return;
         }
         try {
@@ -37,6 +38,7 @@ public class Quest {
         } catch(NumberFormatException e) {
             DateQuests.getInstance().getLogger().severe(event + " is not a correct event!");
             requiredProgress = 1;
+            this.event = "break 1 bedrock";
         }
     }
 

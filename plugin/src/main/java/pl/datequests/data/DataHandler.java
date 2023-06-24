@@ -121,6 +121,9 @@ public class DataHandler {
     }
 
     public void save() {
+        for(QuestSchema schema : questsManager.getQuestSchemas()) {
+            saveSchemaTags(schema);
+        }
         try {
             data.save(getDataFile());
         } catch(IOException e) {

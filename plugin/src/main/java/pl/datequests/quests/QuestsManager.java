@@ -1,8 +1,6 @@
 package pl.datequests.quests;
 
 import lombok.Getter;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -46,6 +44,32 @@ public class QuestsManager {
         List<Quest> playerQuests = getPlayersQuests(player);
         playerQuests.add(quest);
         quests.put(player, playerQuests);
+    }
+
+    public boolean takeQuest(String player, QuestSchema schema) {
+        if(!isPlayerCanTakeQuest(player, schema)) {
+            return false;
+        }
+        Player p = PlayerUtil.getPlayer(player);
+        if(p == null) {
+            return false;
+        }
+        Quest q = new Quest();
+        q.setOwner(player);
+        q.setQuestSchema(schema);
+        q.setDateTag(schema.getDateTag());
+        q.setTagID(schema.getTagID());
+        q.randomizeEvent();
+        assignQuest(player, q);
+        PlayerUtil.sendTitle(
+                p, "§eAccepted quest: §6" + schema.getSchemaName(),
+                "§6" + q.getEvent(),
+                10,
+                100,
+                10
+        );
+        q.save();
+        return true;
     }
 
     @Nullable
@@ -177,16 +201,31 @@ public class QuestsManager {
                     if(newTag.equals(plugin.getDateManager().getFormattedDate("%Y/%M/1"))) {
                         schema.setDateTag(newTag);
                         changedTag = true;
+                    } else if(schema.getDateTag() == null) {
+                        schema.setDateTag(plugin.getDateManager().getFormattedDate("%Y/%M/1"));
+                        changedTag = true;
+                    } else {
+                        try {
+                            int currentMonth = Integer.parseInt(plugin.getDateManager().getFormattedDate("%M"));
+                            String[] split = schema.getDateTag().split("/");
+                            int lastRandomizedMonth = Integer.parseInt(split[1]);
+                            if(currentMonth > lastRandomizedMonth) {
+                                schema.setDateTag(plugin.getDateManager().getFormattedDate("%Y/%M/1"));
+                                changedTag = true;
+                            }
+                        } catch(NumberFormatException | IndexOutOfBoundsException ignored) {}
                     }
                 } else {
                     if(plugin.getDateManager().getDayName().equalsIgnoreCase(schema.getQuestInterval().name())) {
+                        schema.setDateTag(newTag);
+                        changedTag = true;
+                    } else if(schema.getDateTag() == null) {
                         schema.setDateTag(newTag);
                         changedTag = true;
                     }
                 }
                 if(changedTag) {
                     schema.setTagID(schema.getTagID() + 1);
-                    DateQuests.getInstance().getDataHandler().saveSchemaTags(schema);
                 }
             }
         }, 0L, 20L);

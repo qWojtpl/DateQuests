@@ -1,5 +1,6 @@
 package pl.datequests.util;
 
+import lombok.Getter;
 import lombok.SneakyThrows;
 
 import java.text.SimpleDateFormat;
@@ -10,9 +11,10 @@ import java.util.concurrent.TimeUnit;
 
 import static java.util.Calendar.*;
 
+@Getter
 public class DateManager {
 
-    public Calendar fakeCalendar = null;
+    private Calendar fakeCalendar = null;
     private final String[] dayNames = new String[]{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
     public int getDaysOfMonth() {
@@ -20,7 +22,7 @@ public class DateManager {
     }
 
     public String getDayName() {
-        return dayNames[getDayOfWeek()];
+        return dayNames[getDayOfWeek() - 1];
     }
 
     public int getDayOfWeek() {
