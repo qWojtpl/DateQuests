@@ -7,6 +7,7 @@ import pl.datequests.DateQuests;
 import pl.datequests.util.RandomNumber;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Getter
@@ -22,6 +23,7 @@ public class QuestSchema {
     private final List<QuestGroup> questGroups = new ArrayList<>();
     private final List<ItemStack> rewardForEvery = new ArrayList<>();
     private final List<ItemStack> rewardForAll = new ArrayList<>();
+    private final HashMap<String, Integer> lastPlayerGroup = new HashMap<>();
 
     public void setDateTag(String dateTag) {
         this.dateTag = dateTag;
@@ -32,9 +34,19 @@ public class QuestSchema {
             DateQuests.getInstance().getLogger().severe("Quest groups is empty!");
             return "ERROR";
         }
-        QuestGroup questGroup = questGroups.get(RandomNumber.randomInt(0, questGroups.size() - 1));
-        int random = RandomNumber.randomInt(0, questGroup.getRanges().size() - 1);
-        String range = questGroup.getRanges().get(random);
+        int randomGroup = RandomNumber.randomInt(0, questGroups.size() - 1);
+        if(questGroups.size() > 1) {
+            if(lastPlayerGroup.containsKey(player)) {
+                while(randomGroup == lastPlayerGroup.get(player)) {
+                    randomGroup = RandomNumber.randomInt(0, questGroups.size() - 1);
+                }
+            }
+            lastPlayerGroup.put(player, randomGroup);
+            DateQuests.getInstance().getDataHandler().saveLastPlayerGroup(player, this, randomGroup);
+        }
+        QuestGroup questGroup = questGroups.get(randomGroup);
+        int randomTask = RandomNumber.randomInt(0, questGroup.getRanges().size() - 1);
+        String range = questGroup.getRanges().get(randomTask);
         String[] split = range.split("-");
         if(split.length != 2) {
             DateQuests.getInstance().getLogger().severe("Range " + range + " is not correct!");
@@ -49,7 +61,7 @@ public class QuestSchema {
             DateQuests.getInstance().getLogger().severe("Range " + range + " is not correct!");
             return "ERROR";
         }
-        return questGroup.getEvents().get(random).replace("%random%", RandomNumber.randomInt(min, max) + "");
+        return questGroup.getEvents().get(randomTask).replace("%random%", RandomNumber.randomInt(min, max) + "");
     }
 
 }

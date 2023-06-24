@@ -5,4 +5,4 @@
 # Normal /dq reload will save existing data to this file
 #
 
-data: {}
+players: {}

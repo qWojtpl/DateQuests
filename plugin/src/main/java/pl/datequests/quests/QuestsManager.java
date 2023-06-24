@@ -143,12 +143,12 @@ public class QuestsManager {
             List<Quest> playerQuests = reverseList(questList);
             List<Quest> sortedQuests = new ArrayList<>();
             for(Quest quest : playerQuests) {
-                if(quest.getQuestState().equals(QuestState.NOT_COMPLETED)) {
+                if(!quest.getQuestState().equals(QuestState.COMPLETED)) {
                     sortedQuests.add(quest);
                 }
             }
             for(Quest quest : playerQuests) {
-                if(!quest.getQuestState().equals(QuestState.NOT_COMPLETED)) {
+                if(quest.getQuestState().equals(QuestState.COMPLETED)) {
                     sortedQuests.add(quest);
                 }
             }
@@ -187,48 +187,52 @@ public class QuestsManager {
         if(dateCheckTask != -1) {
             plugin.getServer().getScheduler().cancelTask(dateCheckTask);
         }
-        dateCheckTask = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
-            String newTag = plugin.getDateManager().getFormattedDate("%Y/%M/%D");
-            for(QuestSchema schema : questSchemas) {
-                if(newTag.equals(schema.getDateTag())) {
-                    continue;
-                }
-                boolean changedTag = false;
-                if(QuestInterval.DAY.equals(schema.getQuestInterval())) {
+        dateCheckTask = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, this::checkTags, 0L, 20L);
+    }
+
+    public void checkTags() {
+        String newTag = plugin.getDateManager().getFormattedDate("%Y/%M/%D");
+        for(QuestSchema schema : questSchemas) {
+            if(newTag.equals(schema.getDateTag())) {
+                continue;
+            }
+            boolean changedTag = false;
+            if(QuestInterval.DAY.equals(schema.getQuestInterval())) {
+                schema.setDateTag(newTag);
+                changedTag = true;
+            } else if(QuestInterval.MONTH.equals(schema.getQuestInterval())) {
+                if(newTag.equals(plugin.getDateManager().getFormattedDate("%Y/%M/1"))) {
                     schema.setDateTag(newTag);
                     changedTag = true;
-                } else if(QuestInterval.MONTH.equals(schema.getQuestInterval())) {
-                    if(newTag.equals(plugin.getDateManager().getFormattedDate("%Y/%M/1"))) {
-                        schema.setDateTag(newTag);
-                        changedTag = true;
-                    } else if(schema.getDateTag() == null) {
-                        schema.setDateTag(plugin.getDateManager().getFormattedDate("%Y/%M/1"));
-                        changedTag = true;
-                    } else {
-                        try {
-                            int currentMonth = Integer.parseInt(plugin.getDateManager().getFormattedDate("%M"));
-                            String[] split = schema.getDateTag().split("/");
-                            int lastRandomizedMonth = Integer.parseInt(split[1]);
-                            if(currentMonth > lastRandomizedMonth) {
-                                schema.setDateTag(plugin.getDateManager().getFormattedDate("%Y/%M/1"));
-                                changedTag = true;
-                            }
-                        } catch(NumberFormatException | IndexOutOfBoundsException ignored) {}
-                    }
+                } else if(schema.getDateTag() == null) {
+                    schema.setDateTag(plugin.getDateManager().getFormattedDate("%Y/%M/1"));
+                    changedTag = true;
                 } else {
-                    if(plugin.getDateManager().getDayName().equalsIgnoreCase(schema.getQuestInterval().name())) {
-                        schema.setDateTag(newTag);
-                        changedTag = true;
-                    } else if(schema.getDateTag() == null) {
-                        schema.setDateTag(newTag);
-                        changedTag = true;
-                    }
+                    try {
+                        int currentMonth = Integer.parseInt(plugin.getDateManager().getFormattedDate("%M"));
+                        int currentYear = Integer.parseInt(plugin.getDateManager().getFormattedDate("%Y"));
+                        String[] split = schema.getDateTag().split("/");
+                        int lastRandomizedMonth = Integer.parseInt(split[1]);
+                        int lastRandomizedYear = Integer.parseInt(split[0]);
+                        if(currentMonth > lastRandomizedMonth && currentYear >= lastRandomizedYear) {
+                            schema.setDateTag(plugin.getDateManager().getFormattedDate("%Y/%M/1"));
+                            changedTag = true;
+                        }
+                    } catch(NumberFormatException | IndexOutOfBoundsException ignored) {}
                 }
-                if(changedTag) {
-                    schema.setTagID(schema.getTagID() + 1);
+            } else {
+                if(plugin.getDateManager().getDayName().equalsIgnoreCase(schema.getQuestInterval().name())) {
+                    schema.setDateTag(newTag);
+                    changedTag = true;
+                } else if(schema.getDateTag() == null) {
+                    schema.setDateTag(newTag);
+                    changedTag = true;
                 }
             }
-        }, 0L, 20L);
+            if(changedTag) {
+                schema.setTagID(schema.getTagID() + 1);
+            }
+        }
     }
 
 }

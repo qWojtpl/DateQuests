@@ -1,7 +1,6 @@
 package pl.datequests.data;
 
 import lombok.Getter;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -85,6 +84,7 @@ public class DataHandler {
                 }
             }
         }
+        questsManager.checkTags();
         if(!loadAllPlayers) {
             for(Player p : plugin.getServer().getOnlinePlayers()) {
                 loadPlayer(p.getName());
@@ -113,11 +113,18 @@ public class DataHandler {
             if(schema == null) {
                 continue;
             }
+            String lastGroupPath = "players." + nickname + "." + schemaName + ".lastGroup";
+            if(data.contains(lastGroupPath)) {
+                schema.getLastPlayerGroup().put(nickname, data.getInt(lastGroupPath));
+            }
             ConfigurationSection questsSection = data.getConfigurationSection("players." + nickname + "." + schemaName);
             if(questsSection == null) {
                 continue;
             }
             for(String dateTag : questsSection.getKeys(false)) {
+                if(dateTag.equals("lastGroup")) {
+                    continue;
+                }
                 String insidePath = "players." + nickname + "." + schemaName + "." + dateTag + ".";
                 Quest q = new Quest();
                 q.setOwner(nickname);
@@ -171,6 +178,10 @@ public class DataHandler {
     public void saveQuestProgress(Quest quest) {
         String path = "players." + quest.getOwner() + "." + quest.getQuestSchema().getSchemaName() + "." + quest.getDateTag() + ".";
         data.set(path + "progress", quest.getProgress());
+    }
+
+    public void saveLastPlayerGroup(String player, QuestSchema schema, int group) {
+        data.set("players." + player + "." + schema.getSchemaName() + ".lastGroup", group);
     }
 
     public File getConfigFile() {
