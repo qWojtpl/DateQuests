@@ -148,6 +148,13 @@ public class DataHandler {
                 questsManager.assignQuest(nickname, q);
             }
         }
+        ConfigurationSection rewardSection = data.getConfigurationSection("players." + nickname + ".--rewards");
+        if(rewardSection == null) {
+            return;
+        }
+        for(String key : rewardSection.getKeys(false)) {
+            questsManager.assignReward(nickname, ItemLoader.getItemStack(data, "players." + nickname + ".--rewards." + key));
+        }
     }
 
     public void loadMessages() {
@@ -197,7 +204,7 @@ public class DataHandler {
     }
 
     public void savePlayerRewards(String player) {
-
+        ItemLoader.parseList(data, "players." + player + ".--rewards", questsManager.getPlayersRewards(player));
     }
 
     public File getConfigFile() {

@@ -1,7 +1,6 @@
 package pl.datequests.quests;
 
 import lombok.Getter;
-import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -52,6 +51,7 @@ public class QuestsManager {
             }
         }
         quest.saveProgress();
+        plugin.getDataHandler().savePlayerRewards(quest.getOwner());
     }
 
     public void assignQuest(String player, Quest quest) {
@@ -64,7 +64,6 @@ public class QuestsManager {
         List<ItemStack> playerRewards = getPlayersRewards(player);
         playerRewards.add(itemStack);
         rewards.put(player, playerRewards);
-        plugin.getLogger().info("Assigned reward: " + itemStack.getType().name() + " ( " + itemStack.getAmount() + ")");
     }
 
     public boolean takeQuest(String player, QuestSchema schema) {
@@ -95,6 +94,9 @@ public class QuestsManager {
 
     public void receiveReward(String player, int rewardIndex) {
         List<ItemStack> playerRewards = getPlayersRewards(player);
+        if(rewardIndex > playerRewards.size() - 1) {
+            return;
+        }
         ItemStack is = playerRewards.get(rewardIndex);
         Player p = PlayerUtil.getPlayer(player);
         if(p != null) {
@@ -104,6 +106,7 @@ public class QuestsManager {
             }
             playerRewards.remove(rewardIndex);
             rewards.put(player, playerRewards);
+            plugin.getDataHandler().savePlayerRewards(player);
         }
     }
 
@@ -140,7 +143,6 @@ public class QuestsManager {
 
     public List<ItemStack> getPlayersRewards(String player) {
         if(rewards.containsKey(player)) {
-            Bukkit.getLogger().info(rewards.get(player).size() + " is a size of player's rewards");
             return rewards.get(player);
         }
         return new ArrayList<>();
