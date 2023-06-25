@@ -1,12 +1,14 @@
 package pl.datequests.quests;
 
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import pl.datequests.DateQuests;
 import pl.datequests.gui.SortType;
 import pl.datequests.util.PlayerUtil;
+import pl.datequests.util.RandomNumber;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -34,6 +36,17 @@ public class QuestsManager {
             if(completed) {
                 p.playSound(p, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.0F);
                 PlayerUtil.sendActionBarMessage(p, "§aYou completed quest " + quest.getQuestSchema().getSchemaName());
+                QuestSchema questSchema = quest.getQuestSchema();
+                if(questSchema.getRewards().size() != 0) {
+                    if(questSchema.getRewardType().equals(RewardType.ALL)) {
+                        for(ItemStack is : questSchema.getRewards()) {
+                            DateQuests.getInstance().getQuestsManager().assignReward(quest.getOwner(), is);
+                        }
+                    } else if(questSchema.getRewardType().equals(RewardType.RANDOM)) {
+                        DateQuests.getInstance().getQuestsManager().assignReward(quest.getOwner(),
+                                questSchema.getRewards().get(RandomNumber.randomInt(0, questSchema.getRewards().size() - 1)));
+                    }
+                }
             } else {
                 PlayerUtil.sendActionBarMessage(p, "§aYou scored in quest " + quest.getQuestSchema().getSchemaName());
             }
@@ -51,6 +64,7 @@ public class QuestsManager {
         List<ItemStack> playerRewards = getPlayersRewards(player);
         playerRewards.add(itemStack);
         rewards.put(player, playerRewards);
+        plugin.getLogger().info("Assigned reward: " + itemStack.getType().name() + " ( " + itemStack.getAmount() + ")");
     }
 
     public boolean takeQuest(String player, QuestSchema schema) {
@@ -77,6 +91,20 @@ public class QuestsManager {
         );
         q.save();
         return true;
+    }
+
+    public void receiveReward(String player, int rewardIndex) {
+        List<ItemStack> playerRewards = getPlayersRewards(player);
+        ItemStack is = playerRewards.get(rewardIndex);
+        Player p = PlayerUtil.getPlayer(player);
+        if(p != null) {
+            HashMap<Integer, ItemStack> rest = p.getInventory().addItem(is);
+            for(int key : rest.keySet()) {
+                p.getWorld().dropItem(p.getLocation(), rest.get(key));
+            }
+            playerRewards.remove(rewardIndex);
+            rewards.put(player, playerRewards);
+        }
     }
 
     @Nullable
@@ -112,6 +140,7 @@ public class QuestsManager {
 
     public List<ItemStack> getPlayersRewards(String player) {
         if(rewards.containsKey(player)) {
+            Bukkit.getLogger().info(rewards.get(player).size() + " is a size of player's rewards");
             return rewards.get(player);
         }
         return new ArrayList<>();

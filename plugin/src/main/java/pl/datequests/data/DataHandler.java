@@ -29,7 +29,6 @@ public class DataHandler {
 
     public void loadConfig() {
         questsManager.getQuestSchemas().clear();
-        questsManager.getQuests().clear();
         YamlConfiguration yml = YamlConfiguration.loadConfiguration(getConfigFile());
         loadAllPlayers = yml.getBoolean("config.loadAllPlayers");
         ConfigurationSection questsSection = yml.getConfigurationSection("quests");
@@ -65,12 +64,25 @@ public class DataHandler {
                         }
                     }
                 }
+                schema.setRewards(ItemLoader.getItemStackList(yml, path + "rewards.items"));
+                RewardType rewardType = RewardType.ALL;
+                String rewardTypeStr = yml.getString(path + "rewards.rewardType");
+                plugin.getLogger().info(rewardTypeStr);
+                try {
+                    rewardType = RewardType.valueOf(rewardTypeStr);
+                } catch(IllegalArgumentException e) {
+                    plugin.getLogger().severe(rewardTypeStr +
+                            " is not correct RewardType! Correct RewardType is RANDOM or ALL. Replacing with ALL...");
+                }
+                schema.setRewardType(rewardType);
                 questsManager.addQuestSchema(schema);
             }
         }
     }
 
     public void loadData() {
+        questsManager.getQuests().clear();
+        questsManager.getRewards().clear();
         playerLoaded.clear();
         data = YamlConfiguration.loadConfiguration(getDataFile());
         ConfigurationSection schemaSection = data.getConfigurationSection("schema");
@@ -113,7 +125,7 @@ public class DataHandler {
             if(schema == null) {
                 continue;
             }
-            String lastGroupPath = "players." + nickname + "." + schemaName + ".lastGroup";
+            String lastGroupPath = "players." + nickname + "." + schemaName + ".--lastGroup";
             if(data.contains(lastGroupPath)) {
                 schema.getLastPlayerGroup().put(nickname, data.getInt(lastGroupPath));
             }
@@ -122,7 +134,7 @@ public class DataHandler {
                 continue;
             }
             for(String dateTag : questsSection.getKeys(false)) {
-                if(dateTag.equals("lastGroup")) {
+                if(dateTag.startsWith("--")) {
                     continue;
                 }
                 String insidePath = "players." + nickname + "." + schemaName + "." + dateTag + ".";
@@ -181,7 +193,11 @@ public class DataHandler {
     }
 
     public void saveLastPlayerGroup(String player, QuestSchema schema, int group) {
-        data.set("players." + player + "." + schema.getSchemaName() + ".lastGroup", group);
+        data.set("players." + player + "." + schema.getSchemaName() + ".--lastGroup", group);
+    }
+
+    public void savePlayerRewards(String player) {
+
     }
 
     public File getConfigFile() {

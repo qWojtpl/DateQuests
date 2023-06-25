@@ -40,8 +40,8 @@ public class ItemLoader {
     public static List<ItemStack> getItemStackList(YamlConfiguration yml, String path) {
         List<ItemStack> list = new ArrayList<>();
         int i = 0;
-        while(yml.getString(path + i + ".material") != null) {
-            list.add(getItemStack(yml, path + i));
+        while(yml.getString(path + "." + i + ".material") != null) {
+            list.add(getItemStack(yml, path + "." + i));
             i++;
         }
         return list;

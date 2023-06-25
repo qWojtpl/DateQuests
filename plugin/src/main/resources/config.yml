@@ -41,7 +41,7 @@ quests:
     changeQuestItem:
       material: DIAMOND
       amount: 1
-    reward:
+    rewards:
       type: RANDOM
       items:
         0:

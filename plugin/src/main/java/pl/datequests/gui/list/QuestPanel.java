@@ -56,6 +56,9 @@ public class QuestPanel extends PluginGUI {
                     closeInventory();
                 }
             }
+        } else if(slot == 18) {
+            closeInventory();
+            new RewardPanel(getOwner(), getInventoryName());
         } else if(slot == 47) {
             previousPage();
         } else if(slot == 50) {
