@@ -97,8 +97,8 @@ public class DateManager {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy" + separator + "MM" + separator + "dd", Locale.ENGLISH);
         Date dStart = sdf.parse(startDate);
         Date dEnd = sdf.parse(endDate);
-        long diffInMillies = Math.abs(dEnd.getTime() - dStart.getTime());
-        return TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+        long diffInMillis = Math.abs(dEnd.getTime() - dStart.getTime());
+        return TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS);
     }
 
 }

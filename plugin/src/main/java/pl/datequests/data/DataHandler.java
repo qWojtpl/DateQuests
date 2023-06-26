@@ -67,7 +67,6 @@ public class DataHandler {
                 schema.setRewards(ItemLoader.getItemStackList(yml, path + "rewards.items"));
                 RewardType rewardType = RewardType.ALL;
                 String rewardTypeStr = yml.getString(path + "rewards.rewardType");
-                plugin.getLogger().info(rewardTypeStr);
                 try {
                     rewardType = RewardType.valueOf(rewardTypeStr);
                 } catch(IllegalArgumentException e) {
@@ -93,6 +92,12 @@ public class DataHandler {
                     String path = "schema." + schemaName + ".";
                     schema.setDateTag(data.getString(path + "dateTag"));
                     schema.setTagID(data.getInt(path + "tagID"));
+                    ConfigurationSection tagsSection = data.getConfigurationSection("monthTags." + schemaName);
+                    if(tagsSection != null) {
+                        for(String date : tagsSection.getKeys(false)) {
+                            schema.getMonthTags().put(date, data.getIntegerList("monthTags." + schemaName + "." + date));
+                        }
+                    }
                 }
             }
         }
@@ -170,9 +175,6 @@ public class DataHandler {
     }
 
     public void save() {
-        for(QuestSchema schema : questsManager.getQuestSchemas()) {
-            saveSchemaTags(schema);
-        }
         try {
             data.save(getDataFile());
         } catch(IOException e) {
@@ -185,6 +187,10 @@ public class DataHandler {
         String path = "schema." + schema.getSchemaName() + ".";
         data.set(path + "dateTag", schema.getDateTag());
         data.set(path + "tagID", schema.getTagID());
+        path = "monthTags." + schema.getSchemaName() + "." + plugin.getDateManager().getFormattedDate("%Y/%M");
+        List<Integer> list = data.getIntegerList(path);
+        list.add(schema.getTagID());
+        data.set(path, list);
     }
 
     public void saveQuest(Quest quest) {

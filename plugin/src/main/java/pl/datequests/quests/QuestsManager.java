@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import pl.datequests.DateQuests;
 import pl.datequests.gui.SortType;
+import pl.datequests.util.DateManager;
 import pl.datequests.util.PlayerUtil;
 import pl.datequests.util.RandomNumber;
 
@@ -30,28 +31,32 @@ public class QuestsManager {
             return;
         }
         boolean completed = quest.setProgress(quest.getProgress() + progress);
-        Player p = PlayerUtil.getPlayer(quest.getOwner());
+        String player = quest.getOwner();
+        Player p = PlayerUtil.getPlayer(player);
         if(p != null) {
             if(completed) {
                 p.playSound(p, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.0F);
-                PlayerUtil.sendActionBarMessage(p, "§aYou completed quest " + quest.getQuestSchema().getSchemaName());
                 QuestSchema questSchema = quest.getQuestSchema();
+                PlayerUtil.sendActionBarMessage(p, "§aYou completed quest " + questSchema.getSchemaName());
                 if(questSchema.getRewards().size() != 0) {
                     if(questSchema.getRewardType().equals(RewardType.ALL)) {
                         for(ItemStack is : questSchema.getRewards()) {
-                            DateQuests.getInstance().getQuestsManager().assignReward(quest.getOwner(), is);
+                            assignReward(player, is);
                         }
                     } else if(questSchema.getRewardType().equals(RewardType.RANDOM)) {
-                        DateQuests.getInstance().getQuestsManager().assignReward(quest.getOwner(),
+                        assignReward(player,
                                 questSchema.getRewards().get(RandomNumber.randomInt(0, questSchema.getRewards().size() - 1)));
                     }
+                }
+                if(isCompletedAllQuests(player)) {
+                    p.sendMessage("§aYou have completed all quests in this month. You've got special reward!");
                 }
             } else {
                 PlayerUtil.sendActionBarMessage(p, "§aYou scored in quest " + quest.getQuestSchema().getSchemaName());
             }
         }
         quest.saveProgress();
-        plugin.getDataHandler().savePlayerRewards(quest.getOwner());
+        plugin.getDataHandler().savePlayerRewards(player);
     }
 
     public void assignQuest(String player, Quest quest) {
@@ -139,6 +144,18 @@ public class QuestsManager {
             return false;
         }
         return split[0].equalsIgnoreCase(event) && split[2].equalsIgnoreCase(subject);
+    }
+
+    public boolean isCompletedAllQuests(String player) {
+        DateManager dateManager = plugin.getDateManager();
+        if(!dateManager.getFormattedDate("%Y/%M/%D").equals(dateManager.getFormattedDate("%Y/%M/" + dateManager.getDaysOfMonth()))) {
+            return false;
+        }
+        List<Quest> playerQuests = getPlayersQuests(player);
+        for(QuestSchema schema : questSchemas) {
+            
+        }
+        return false;
     }
 
     public List<ItemStack> getPlayersRewards(String player) {
@@ -276,6 +293,7 @@ public class QuestsManager {
             }
             if(changedTag) {
                 schema.setTagID(schema.getTagID() + 1);
+                plugin.getDataHandler().saveSchemaTags(schema);
             }
         }
     }

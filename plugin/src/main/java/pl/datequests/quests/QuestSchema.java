@@ -23,6 +23,7 @@ public class QuestSchema {
     private RewardType rewardType;
     private List<ItemStack> rewards = new ArrayList<>();
     private final List<QuestGroup> questGroups = new ArrayList<>();
+    private final HashMap<String, List<Integer>> monthTags = new HashMap<>();
     private final HashMap<String, Integer> lastPlayerGroup = new HashMap<>();
 
     public void setDateTag(String dateTag) {
