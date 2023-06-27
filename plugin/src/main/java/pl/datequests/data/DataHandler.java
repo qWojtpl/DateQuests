@@ -55,13 +55,13 @@ public class DataHandler {
                         if(groupQuestSection == null) {
                             continue;
                         }
+                        QuestGroup questGroup = new QuestGroup();
                         for(String questID : groupQuestSection.getKeys(false)) {
-                            QuestGroup questGroup = new QuestGroup();
                             String questPath = path + "questGroups." + id + "." + questID + ".";
                             questGroup.getEvents().add(yml.getString(questPath + "event"));
                             questGroup.getRanges().add(yml.getString(questPath + "range"));
-                            schema.getQuestGroups().add(questGroup);
                         }
+                        schema.getQuestGroups().add(questGroup);
                     }
                 }
                 schema.setRewards(ItemLoader.getItemStackList(yml, path + "rewards.items"));
@@ -150,6 +150,7 @@ public class DataHandler {
                 q.setTagID(data.getInt(insidePath + "tagID"));
                 q.setEvent(data.getString(insidePath + "event", ""));
                 q.setProgress(data.getInt(insidePath + "progress"));
+                q.setChanged(data.getBoolean(insidePath + "changed"));
                 questsManager.assignQuest(nickname, q);
             }
         }
@@ -197,6 +198,9 @@ public class DataHandler {
         String path = "players." + quest.getOwner() + "." + quest.getQuestSchema().getSchemaName() + "." + quest.getDateTag() + ".";
         data.set(path + "tagID", quest.getTagID());
         data.set(path + "event", quest.getEvent());
+        if(quest.isChanged()) {
+            data.set(path + "changed", quest.isChanged());
+        }
         saveQuestProgress(quest);
     }
 

@@ -15,10 +15,14 @@ public class Quest {
     private String event;
     private int progress = 0;
     private int requiredProgress = 1;
+    private boolean changed;
     private String dateTag;
     private int tagID;
 
     public void randomizeEvent() {
+        if(changed) {
+            return;
+        }
         setEvent(questSchema.getRandomEvent(owner));
         progress = 0;
     }

@@ -151,11 +151,27 @@ public class QuestsManager {
         if(!dateManager.getFormattedDate("%Y/%M/%D").equals(dateManager.getFormattedDate("%Y/%M/" + dateManager.getDaysOfMonth()))) {
             return false;
         }
-        List<Quest> playerQuests = getPlayersQuests(player);
         for(QuestSchema schema : questSchemas) {
-            
+            String month = plugin.getDateManager().getFormattedDate("%Y/%M");
+            if(!schema.getMonthTags().containsKey(month)) {
+                continue;
+            }
+            List<Integer> monthTags = schema.getMonthTags().get(month);
+            List<Quest> playerQuests = getPlayersQuestsBySchema(player, schema);
+            for(int tag : monthTags) {
+                boolean found = false;
+                for(Quest q : playerQuests) {
+                    if(q.getTagID() == tag && q.getQuestState().equals(QuestState.COMPLETED)) {
+                        found = true;
+                        break;
+                    }
+                }
+                if(!found) {
+                    return false;
+                }
+            }
         }
-        return false;
+        return true;
     }
 
     public List<ItemStack> getPlayersRewards(String player) {
