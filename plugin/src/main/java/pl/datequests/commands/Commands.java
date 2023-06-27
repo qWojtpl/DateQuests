@@ -6,12 +6,14 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import pl.datequests.DateQuests;
 import pl.datequests.data.DataHandler;
+import pl.datequests.data.MessagesManager;
 import pl.datequests.gui.list.QuestList;
 
 public class Commands implements CommandExecutor {
 
     private final DateQuests plugin = DateQuests.getInstance();
     private final DataHandler dataHandler = plugin.getDataHandler();
+    private final MessagesManager messages = plugin.getMessagesManager();
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -28,7 +30,7 @@ public class Commands implements CommandExecutor {
             }
         }
         if(sender instanceof Player) {
-            new QuestList((Player) sender, "test");
+            new QuestList((Player) sender, messages.getMessage("guiTitle"));
         }
         return true;
     }
@@ -38,7 +40,7 @@ public class Commands implements CommandExecutor {
             dataHandler.save();
         }
         dataHandler.loadAll();
-        sender.sendMessage("§aReloaded! " + (save ? "(Saved all data)" : "(Skipped saving)"));
+        sender.sendMessage(messages.getMessage("reloaded") + (save ? "(Saved all data)" : "(Skipped saving)"));
     }
 
 }

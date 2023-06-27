@@ -3,9 +3,7 @@ package pl.datequests.quests;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
 import pl.datequests.DateQuests;
-import pl.datequests.util.RandomNumber;
 
 @Getter
 @Setter

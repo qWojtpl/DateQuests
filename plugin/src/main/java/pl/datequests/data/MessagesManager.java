@@ -9,13 +9,12 @@ public class MessagesManager {
     public String getMessage(String key) {
         if(messages.containsKey(key)) {
             return messages.get(key).replace("%prefix%", getRawMessage("prefix")).replace("&", "§");
-        } else {
-            return "NULL";
         }
+        return key;
     }
 
     public String getRawMessage(String key) {
-        return messages.getOrDefault(key, "NULL");
+        return messages.getOrDefault(key, key);
     }
 
     public void addMessage(String key, String message) {

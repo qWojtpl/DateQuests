@@ -1,6 +1,5 @@
 package pl.datequests.gui.list;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import pl.datequests.DateQuests;
@@ -37,6 +36,11 @@ public class QuestList extends PluginGUI {
             slots.add(20);
             slots.add(22);
             slots.add(24);
+        } else if(numberOfSchemas == 4) {
+            slots.add(19);
+            slots.add(21);
+            slots.add(23);
+            slots.add(25);
         } else {
             for(int i = 0; i < numberOfSchemas; i++) {
                 slots.add(i);

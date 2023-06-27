@@ -4,6 +4,6 @@ public enum QuestState {
 
     COMPLETED,
     NOT_COMPLETED,
-    NOT_ACTIVE,
+    NOT_ACTIVE
 
 }

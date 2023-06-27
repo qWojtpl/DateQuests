@@ -10,6 +10,6 @@ public enum QuestInterval {
     THURSDAY,
     FRIDAY,
     SATURDAY,
-    SUNDAY;
+    SUNDAY
 
 }

@@ -9,6 +9,7 @@ import pl.datequests.data.DataHandler;
 import pl.datequests.data.MessagesManager;
 import pl.datequests.events.Events;
 import pl.datequests.gui.GUIManager;
+import pl.datequests.permissions.PermissionManager;
 import pl.datequests.quests.QuestsManager;
 import pl.datequests.util.DateManager;
 
@@ -20,6 +21,7 @@ public final class DateQuests extends JavaPlugin {
     private QuestsManager questsManager;
     private GUIManager guiManager;
     private MessagesManager messagesManager;
+    private PermissionManager permissionManager;
     private DataHandler dataHandler;
     private Commands commands;
     private CommandHelper commandHelper;
@@ -32,6 +34,7 @@ public final class DateQuests extends JavaPlugin {
         this.questsManager = new QuestsManager();
         this.guiManager = new GUIManager();
         this.messagesManager = new MessagesManager();
+        this.permissionManager = new PermissionManager();
         this.dataHandler = new DataHandler();
         this.commands = new Commands();
         this.commandHelper = new CommandHelper();

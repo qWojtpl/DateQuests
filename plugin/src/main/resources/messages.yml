@@ -1,0 +1,4 @@
+messages:
+  guiTitle: "&2&lDateQuests"
+  prefix: "&6[&2Date&fQuests&6] "
+  reloaded: "%prefix%&aReloaded!"
