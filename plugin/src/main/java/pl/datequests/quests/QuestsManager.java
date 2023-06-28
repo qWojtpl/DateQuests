@@ -295,6 +295,7 @@ public class QuestsManager {
         for(Quest q : playerQuests) {
             if(q.getQuestState().equals(QuestState.NOT_COMPLETED)) {
                 quest = q;
+                break;
             }
         }
         if(quest == null) {

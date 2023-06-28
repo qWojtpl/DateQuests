@@ -3,6 +3,7 @@ package pl.datequests;
 import lombok.Getter;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
+import pl.datequests.citizens.CitizensController;
 import pl.datequests.commands.CommandHelper;
 import pl.datequests.commands.Commands;
 import pl.datequests.data.DataHandler;
@@ -22,6 +23,7 @@ public final class DateQuests extends JavaPlugin {
     private GUIManager guiManager;
     private MessagesManager messagesManager;
     private PermissionManager permissionManager;
+    private CitizensController citizensController;
     private DataHandler dataHandler;
     private Commands commands;
     private CommandHelper commandHelper;
@@ -35,6 +37,12 @@ public final class DateQuests extends JavaPlugin {
         this.guiManager = new GUIManager();
         this.messagesManager = new MessagesManager();
         this.permissionManager = new PermissionManager();
+        if(getServer().getPluginManager().getPlugin("Citizens") == null) {
+            getLogger().info("Not found Citizens plugin!");
+        } else {
+            getLogger().info("Found Citizens!");
+            this.citizensController = new CitizensController();
+        }
         this.dataHandler = new DataHandler();
         this.commands = new Commands();
         this.commandHelper = new CommandHelper();
@@ -61,6 +69,10 @@ public final class DateQuests extends JavaPlugin {
 
     public static DateQuests getInstance() {
         return main;
+    }
+
+    public boolean isUsingCitizens() {
+        return (citizensController != null);
     }
 
 }
