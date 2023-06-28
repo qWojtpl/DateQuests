@@ -1,9 +1,12 @@
 package pl.datequests.gui.list;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import pl.datequests.DateQuests;
 import pl.datequests.gui.PluginGUI;
 
 import java.util.ArrayList;
@@ -14,6 +17,7 @@ public class RewardPanel extends PluginGUI {
     private List<Integer> slots;
     private List<Integer> itemSlots;
     private int currentOffset;
+    private int receiveTask = -1;
 
     public RewardPanel(Player owner, String inventoryName) {
         super(owner, inventoryName, 54);
@@ -38,7 +42,31 @@ public class RewardPanel extends PluginGUI {
                 slots.add(i);
             }
         }
+        setSlot(46, Material.ARROW, "Previous page", getLore("Go to previous page"));
+        setSlot(49, Material.CHEST, "Receive all rewards", getLore("Click to receive all rewards"));
+        setSlot(52, Material.ARROW, "Next page", getLore("Go to next page"));
         loadRewards();
+    }
+
+    @Override
+    public void onClick(int slot) {
+        if(itemSlots.contains(slot)) {
+            getQuestsManager().receiveReward(getOwner().getName(), itemSlots.indexOf(slot) + currentOffset);
+            loadRewards();
+        } else if(slot == 46) {
+            previousPage();
+        } else if(slot == 49) {
+            receiveAllRewards();
+        } else if(slot == 52) {
+            nextPage();
+        }
+    }
+
+    @Override
+    public void onClose() {
+        if(receiveTask != -1) {
+            DateQuests.getInstance().getServer().getScheduler().cancelTask(receiveTask);
+        }
     }
 
     public void loadRewards() {
@@ -48,9 +76,10 @@ public class RewardPanel extends PluginGUI {
         itemSlots = new ArrayList<>();
         List<ItemStack> rewards = getQuestsManager().getPlayersRewards(getOwner().getName());
         int i = 0;
+        int j = 0;
         for(ItemStack is : rewards) {
-            if(currentOffset > i) {
-                i++;
+            if(currentOffset > j) {
+                j++;
                 continue;
             }
             if(i > slots.size() - 1) {
@@ -74,12 +103,40 @@ public class RewardPanel extends PluginGUI {
         }
     }
 
-    @Override
-    public void onClick(int slot) {
-        if(itemSlots.contains(slot)) {
-            getQuestsManager().receiveReward(getOwner().getName(), itemSlots.indexOf(slot));
-            loadRewards();
+    private void previousPage() {
+        if(currentOffset == 0) {
+            getOwner().playSound(getOwner(), Sound.ENTITY_VILLAGER_NO, 1.0F, 1.5F);
+            return;
         }
+        getOwner().playSound(getOwner(), Sound.ITEM_BOOK_PAGE_TURN, 1.0F, 1.0F);
+        currentOffset -= 28;
+        loadRewards();
+    }
+
+    private void nextPage() {
+        if(currentOffset + 28 > getQuestsManager().getPlayersRewards(getOwner().getName()).size()) {
+            getOwner().playSound(getOwner(), Sound.ENTITY_VILLAGER_NO, 1.0F, 1.5F);
+            return;
+        }
+        getOwner().playSound(getOwner(), Sound.ITEM_BOOK_PAGE_TURN, 1.0F, 1.0F);
+        currentOffset += 28;
+        loadRewards();
+    }
+
+    private void receiveAllRewards() {
+        if(itemSlots.size() == 0) {
+            getOwner().playSound(getOwner(), Sound.ENTITY_VILLAGER_NO, 1.0F, 1.5F);
+            return;
+        }
+        DateQuests plugin = DateQuests.getInstance();
+        receiveTask = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+            if(getQuestsManager().getPlayersRewards(getOwner().getName()).size() == 0) {
+                plugin.getServer().getScheduler().cancelTask(receiveTask);
+                return;
+            }
+            getQuestsManager().receiveReward(getOwner().getName(), 0);
+            loadRewards();
+        }, 0L, 1L);
     }
 
 }

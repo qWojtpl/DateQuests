@@ -26,6 +26,9 @@ public abstract class PluginGUI {
     private final int inventorySize;
     private final Inventory inventory;
     private boolean guiProtected;
+    private boolean updating;
+    private int updateInterval = 5;
+    private int updateTask = -1;
 
     public PluginGUI(Player owner, String inventoryName, int inventorySize) {
         DateQuests plugin = DateQuests.getInstance();
@@ -103,15 +106,32 @@ public abstract class PluginGUI {
         }
     }
 
+    public void setGUIUpdating(boolean updating) {
+        this.updating = updating;
+        if(updating) {
+            updateTask = DateQuests.getInstance().getServer().getScheduler().scheduleSyncRepeatingTask(
+                    DateQuests.getInstance(), this::onUpdate, 0L, updateInterval);
+        } else {
+            if(updateTask == -1) {
+                return;
+            }
+            DateQuests.getInstance().getServer().getScheduler().cancelTask(updateTask);
+        }
+    }
+
     public void onOpen() {
 
     }
 
     public void onClose() {
-
+        setGUIUpdating(false);
     }
 
     public void onClick(int slot) {
+
+    }
+
+    public void onUpdate() {
 
     }
 

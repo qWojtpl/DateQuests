@@ -6,8 +6,10 @@ import org.bukkit.entity.Player;
 import pl.datequests.gui.PluginGUI;
 import pl.datequests.gui.SortType;
 import pl.datequests.quests.Quest;
+import pl.datequests.quests.QuestGroup;
 import pl.datequests.quests.QuestSchema;
 import pl.datequests.quests.QuestState;
+import pl.datequests.util.RandomNumber;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +20,7 @@ public class QuestPanel extends PluginGUI {
     private SortType currentSortType;
     private int currentOffset;
     private List<Integer> slots;
+    private Material lastRandomizedMaterial;
     private final int questIndex;
 
     public QuestPanel(Player owner, String inventoryName, int questIndex) {
@@ -67,7 +70,33 @@ public class QuestPanel extends PluginGUI {
         }
     }
 
+    @Override
+    public void onUpdate() {
+        List<Material> materials = new ArrayList<>();
+        for(QuestGroup group : questSchema.getQuestGroups()) {
+            for(String event : group.getEvents()) {
+                materials.add(getQuestsManager().getEventMaterial(event));
+            }
+        }
+        Material randomizedMaterial = materials.get(RandomNumber.randomInt(0, materials.size() - 1));;
+        if(lastRandomizedMaterial != null) {
+            int c = 0;
+            while(lastRandomizedMaterial.equals(randomizedMaterial)) {
+                if(c >= 15) {
+                    break;
+                }
+                randomizedMaterial = materials.get(RandomNumber.randomInt(0, materials.size() - 1));
+                c++;
+            }
+        }
+        lastRandomizedMaterial = randomizedMaterial;
+        setSlot(slots.get(0), randomizedMaterial,
+                "New quest", getLore("Click to take new quest!"));
+        setSlotEnchanted(slots.get(0), true);
+    }
+
     private void loadQuests() {
+        setGUIUpdating(false);
         slots = new ArrayList<>();
         int[] protectedSlots = new int[]{0, 9, 18, 27, 36, 45};
         for(int i = 2; i <= 45; i++) {
@@ -80,23 +109,24 @@ public class QuestPanel extends PluginGUI {
         int i = 0;
         if(currentOffset == 0) {
             if(getQuestsManager().isPlayerCanTakeQuest(getOwner().getName(), questSchema)) {
-                setSlot(slots.get(i), Material.POPPY, "New quest", getLore("Click to accept"));
-                setSlotEnchanted(slots.get(i), true);
+                setUpdateInterval(15);
+                setGUIUpdating(true);
                 i++;
             }
         }
         List<Quest> questList = getQuestsManager().getSortedQuests(
                 getQuestsManager().getPlayersQuestsBySchema(getOwner().getName(), questSchema),
                 currentSortType);
+        int j = 0;
         for(Quest quest : questList) {
-            if(currentOffset > i) {
-                i++;
+            if(currentOffset > j) {
+                j++;
                 continue;
             }
             if(i > slots.size() - 1) {
                 break;
             }
-            Material m = quest.getEventMaterial();
+            Material m = getQuestsManager().getEventMaterial(quest.getEvent());
             String status = "§aCOMPLETED";
             if(quest.getQuestState().equals(QuestState.NOT_ACTIVE)) {
                 status = "§cNOT ACTIVE";
@@ -114,6 +144,7 @@ public class QuestPanel extends PluginGUI {
 
     private void nextPage() {
         if(getQuestsManager().getPlayersQuestsBySchema(getOwner().getName(), questSchema).size() < currentOffset + 36) {
+            getOwner().playSound(getOwner(), Sound.ENTITY_VILLAGER_NO, 1.0F, 1.5F);
             return;
         }
         getOwner().playSound(getOwner(), Sound.ITEM_BOOK_PAGE_TURN, 1.0F, 1.0F);
@@ -123,6 +154,7 @@ public class QuestPanel extends PluginGUI {
 
     private void previousPage() {
         if(currentOffset == 0) {
+            getOwner().playSound(getOwner(), Sound.ENTITY_VILLAGER_NO, 1.0F, 1.5F);
             return;
         }
         getOwner().playSound(getOwner(), Sound.ITEM_BOOK_PAGE_TURN, 1.0F, 1.0F);
@@ -134,6 +166,7 @@ public class QuestPanel extends PluginGUI {
         if(currentSortType == null) {
             currentSortType = SortType.NEWEST;
         } else {
+            getOwner().playSound(getOwner(), Sound.BLOCK_ANVIL_PLACE, 1.0F, 1.0F);
             currentSortType = SortType.getNext(currentSortType);
         }
         int index = SortType.getIndex(currentSortType);

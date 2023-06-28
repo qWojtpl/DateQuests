@@ -4,6 +4,8 @@ main: pl.datequests.DateQuests
 api-version: 1.19
 authors: [Assasin98980]
 description: Add date quests to your Minecraft server
+softdepend:
+  - Citizens
 commands:
   datequests:
     description: Use DateQuests plugin

@@ -1,6 +1,7 @@
 package pl.datequests.quests;
 
 import lombok.Getter;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -259,6 +260,28 @@ public class QuestsManager {
             return null;
         }
         return questSchemas.get(index);
+    }
+
+    public Material getEventMaterial(String event) {
+        if(event == null) {
+            return Material.BEDROCK;
+        }
+        String[] split = event.split(" ");
+        if(split.length != 3) {
+            return Material.BEDROCK;
+        }
+        Material m = Material.getMaterial(split[2].toUpperCase());
+        if(m == null) {
+            if(split[0].equalsIgnoreCase("kill")) {
+                m = Material.getMaterial(split[2].toUpperCase() + "_SPAWN_EGG");
+                if(m == null) {
+                    m = Material.BEDROCK;
+                }
+            } else {
+                m = Material.BEDROCK;
+            }
+        }
+        return m;
     }
 
     public void registerDateCheckTask() {
