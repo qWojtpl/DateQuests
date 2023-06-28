@@ -113,6 +113,7 @@ public class QuestsManager {
             playerRewards.remove(rewardIndex);
             rewards.put(player, playerRewards);
             plugin.getDataHandler().savePlayerRewards(player);
+            p.playSound(p, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 2.0F);
         }
     }
 

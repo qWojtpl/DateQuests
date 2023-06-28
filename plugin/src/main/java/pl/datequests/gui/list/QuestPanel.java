@@ -143,7 +143,7 @@ public class QuestPanel extends PluginGUI {
     }
 
     private void nextPage() {
-        if(getQuestsManager().getPlayersQuestsBySchema(getOwner().getName(), questSchema).size() < currentOffset + 36) {
+        if(getQuestsManager().getPlayersQuestsBySchema(getOwner().getName(), questSchema).size() - 1 < currentOffset + 36) {
             getOwner().playSound(getOwner(), Sound.ENTITY_VILLAGER_NO, 1.0F, 1.5F);
             return;
         }

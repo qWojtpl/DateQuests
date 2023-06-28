@@ -75,6 +75,9 @@ public class RewardPanel extends PluginGUI {
         }
         itemSlots = new ArrayList<>();
         List<ItemStack> rewards = getQuestsManager().getPlayersRewards(getOwner().getName());
+        while(currentOffset > rewards.size()) {
+            previousPage();
+        }
         int i = 0;
         int j = 0;
         for(ItemStack is : rewards) {
@@ -114,7 +117,7 @@ public class RewardPanel extends PluginGUI {
     }
 
     private void nextPage() {
-        if(currentOffset + 28 > getQuestsManager().getPlayersRewards(getOwner().getName()).size()) {
+        if(currentOffset + 28 > getQuestsManager().getPlayersRewards(getOwner().getName()).size() - 1) {
             getOwner().playSound(getOwner(), Sound.ENTITY_VILLAGER_NO, 1.0F, 1.5F);
             return;
         }
@@ -131,6 +134,7 @@ public class RewardPanel extends PluginGUI {
         DateQuests plugin = DateQuests.getInstance();
         receiveTask = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
             if(getQuestsManager().getPlayersRewards(getOwner().getName()).size() == 0) {
+                getOwner().playSound(getOwner(), Sound.ENTITY_VILLAGER_YES, 1.0F, 0.75F);
                 plugin.getServer().getScheduler().cancelTask(receiveTask);
                 return;
             }
