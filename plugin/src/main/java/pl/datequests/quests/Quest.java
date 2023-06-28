@@ -2,7 +2,10 @@ package pl.datequests.quests;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.md_5.bungee.api.chat.TranslatableComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 import pl.datequests.DateQuests;
 
 @Getter

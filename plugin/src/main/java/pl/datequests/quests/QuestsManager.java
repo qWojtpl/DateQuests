@@ -285,6 +285,126 @@ public class QuestsManager {
         return m;
     }
 
+    public void changeActiveQuestEvent(String player, QuestSchema schema) {
+        Player p = PlayerUtil.getPlayer(player);
+        if(p == null) {
+            return;
+        }
+        List<Quest> playerQuests = getPlayersQuestsBySchema(player, schema);
+        Quest quest = null;
+        for(Quest q : playerQuests) {
+            if(q.getQuestState().equals(QuestState.NOT_COMPLETED)) {
+                quest = q;
+            }
+        }
+        if(quest == null) {
+            p.sendMessage("You don't have any active quest in this category.");
+            return;
+        }
+        if(quest.isChanged()) {
+            p.sendMessage("You've already changed this quest!");
+            return;
+        }
+        List<ItemStack> items = new ArrayList<>();
+        items.add(schema.getChangeQuestItem());
+        List<Integer> itemSlots = getItemSlots(p, items);
+        if(itemSlots.size() == 0) {
+            p.sendMessage("You don't have required items to change quest!");
+            return;
+        }
+        takeItems(p, itemSlots, items);
+        quest.randomizeEvent();
+        PlayerUtil.sendTitle(p,
+                "§eChanged quest: §6" + schema.getSchemaName(),
+                "§6" + quest.getEvent(),
+                10,
+                100,
+                10);
+        quest.setChanged(true);
+        quest.save();
+    }
+
+    public List<Integer> getItemSlots(Player player, List<ItemStack> items) {
+        List<Integer> slots = new ArrayList<>();
+        int goodItems = 0;
+        for(ItemStack is : items) {
+            int totalAmount = 0;
+            for(int i = 0; i < 36; i++) {
+                ItemStack inventoryItem = player.getInventory().getItem(i);
+                if(inventoryItem == null) {
+                    continue;
+                }
+                if(!isSimilar(inventoryItem, is)) {
+                    continue;
+                }
+                totalAmount += inventoryItem.getAmount();
+                slots.add(i);
+            }
+            if(totalAmount < is.getAmount()) return new ArrayList<>();
+            goodItems++;
+        }
+        if(goodItems < items.size()) return new ArrayList<>();
+        return slots;
+    }
+
+    public void takeItems(Player player, List<Integer> checkSlots, List<ItemStack> items) {
+        for(ItemStack is : items) {
+            int required = is.getAmount();
+            for(int slot : checkSlots) {
+                ItemStack inventoryItem = player.getInventory().getItem(slot);
+                if(inventoryItem == null) {
+                    continue;
+                }
+                if(!isSimilar(inventoryItem, is)) {
+                    continue;
+                }
+                required -= inventoryItem.getAmount();
+                if(required > 0) {
+                    inventoryItem.setAmount(0);
+                } else {
+                    inventoryItem.setAmount(-required);
+                    break;
+                }
+            }
+        }
+        player.updateInventory();
+    }
+
+    public boolean isSimilar(ItemStack inventoryItem, ItemStack is) {
+        if(inventoryItem == null || is == null) {
+            return false;
+        }
+        if(!inventoryItem.getType().equals(is.getType())) {
+            return false;
+        }
+        if(inventoryItem.getItemMeta() == null) {
+            return false;
+        }
+        if(is.getItemMeta() == null) {
+            return false;
+        }
+        if(!inventoryItem.getItemMeta().getDisplayName().equals(is.getItemMeta().getDisplayName())) {
+            return false;
+        }
+        if(inventoryItem.getItemMeta().getLore() == null && is.getItemMeta().getLore() != null) {
+            return false;
+        }
+        if(inventoryItem.getItemMeta().getLore() != null && is.getItemMeta().getLore() == null) {
+            return false;
+        }
+        if(inventoryItem.getItemMeta().getLore() != null) {
+            if(is.getItemMeta().getLore() != null) {
+                if(!inventoryItem.getItemMeta().getLore().equals(is.getItemMeta().getLore())) {
+                    return false;
+                }
+            }
+        }
+        if(!inventoryItem.getItemMeta().getEnchants().equals(is.getEnchantments())) {
+            return false;
+        }
+        return (inventoryItem.getItemMeta().isUnbreakable() == is.getItemMeta().isUnbreakable());
+    }
+
     public void registerDateCheckTask() {
         if(dateCheckTask != -1) {
             plugin.getServer().getScheduler().cancelTask(dateCheckTask);

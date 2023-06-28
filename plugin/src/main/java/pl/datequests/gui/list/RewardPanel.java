@@ -75,7 +75,10 @@ public class RewardPanel extends PluginGUI {
         }
         itemSlots = new ArrayList<>();
         List<ItemStack> rewards = getQuestsManager().getPlayersRewards(getOwner().getName());
-        while(currentOffset > rewards.size()) {
+        while(currentOffset >= rewards.size()) {
+            if(currentOffset == 0) {
+                break;
+            }
             previousPage();
         }
         int i = 0;
@@ -103,6 +106,9 @@ public class RewardPanel extends PluginGUI {
             setSlot(slots.get(i), itemStack);
             itemSlots.add(slots.get(i));
             i++;
+        }
+        if(rewards.size() == 0) {
+            setSlot(22, Material.BARRIER, "No rewards", getLore("You don't have any rewards. Get it by completing quests!"));
         }
     }
 

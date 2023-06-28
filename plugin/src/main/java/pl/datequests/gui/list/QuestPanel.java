@@ -3,6 +3,7 @@ package pl.datequests.gui.list;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import pl.datequests.gui.PluginGUI;
 import pl.datequests.gui.SortType;
 import pl.datequests.quests.Quest;
@@ -45,6 +46,16 @@ public class QuestPanel extends PluginGUI {
                 "Completed quests: " + completed,
                 "Quests assigned: " + getQuestsManager().getPlayersQuestsBySchema(getOwner().getName(), questSchema).size()));
         setSlot(18, Material.CHEST, "Rewards", getLore("Get your rewards!"));
+        ItemStack changeItem = questSchema.getChangeQuestItem();
+        String displayName = "";
+        if(changeItem.getItemMeta() != null) {
+            if(!changeItem.getItemMeta().getDisplayName().equals("")) {
+                displayName = "(" + changeItem.getItemMeta().getDisplayName() + ")";
+            }
+        }
+        setSlot(27, Material.ENDER_EYE, "Change quest", getLore(
+                "By clicking that, you'll change event for current quest in this category.",
+                "Cost: ", changeItem.getType().name() + " x" + changeItem.getAmount() + displayName));
         setSlot(47, Material.ARROW, "§f§lPrevious page", getLore("Go to previous page"));
         setSlot(53, Material.ARROW, "§f§lNext page", getLore("Go to next page"));
         changeSortType();
@@ -61,6 +72,8 @@ public class QuestPanel extends PluginGUI {
         } else if(slot == 18) {
             closeInventory();
             new RewardPanel(getOwner(), getInventoryName());
+        } else if(slot == 27) {
+            changeEvent();
         } else if(slot == 47) {
             previousPage();
         } else if(slot == 50) {
@@ -78,7 +91,7 @@ public class QuestPanel extends PluginGUI {
                 materials.add(getQuestsManager().getEventMaterial(event));
             }
         }
-        Material randomizedMaterial = materials.get(RandomNumber.randomInt(0, materials.size() - 1));;
+        Material randomizedMaterial = materials.get(RandomNumber.randomInt(0, materials.size() - 1));
         if(lastRandomizedMaterial != null) {
             int c = 0;
             while(lastRandomizedMaterial.equals(randomizedMaterial)) {
@@ -177,6 +190,11 @@ public class QuestPanel extends PluginGUI {
                 (index == 3 ? "§a§l" : "§6") + " NOT COMPLETED"));
         currentOffset = 0;
         loadQuests();
+    }
+
+    private void changeEvent() {
+        getQuestsManager().changeActiveQuestEvent(getOwner().getName(), questSchema);
+        closeInventory();
     }
 
     private boolean isProtectedSlot(int[] array, int value) {
