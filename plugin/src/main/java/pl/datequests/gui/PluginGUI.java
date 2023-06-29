@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import pl.datequests.DateQuests;
+import pl.datequests.data.MessagesManager;
 import pl.datequests.quests.QuestsManager;
 
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import java.util.List;
 public abstract class PluginGUI {
 
     private final QuestsManager questsManager = DateQuests.getInstance().getQuestsManager();
+    private final MessagesManager messages = DateQuests.getInstance().getMessagesManager();
     private final Player owner;
     private final String inventoryName;
     private final int inventorySize;
@@ -69,7 +71,13 @@ public abstract class PluginGUI {
     }
 
     public List<String> getLore(String... loreLine) {
-        return new ArrayList<>(Arrays.asList(loreLine));
+        List<String> lore = new ArrayList<>(Arrays.asList(loreLine));
+        List<String> parsedLore = new ArrayList<>();
+        for(String line : lore) {
+            String[] split = line.split("%nl%");
+            parsedLore.addAll(Arrays.asList(split));
+        }
+        return parsedLore;
     }
 
     public void setSlotEnchanted(int slot, boolean enchanted) {

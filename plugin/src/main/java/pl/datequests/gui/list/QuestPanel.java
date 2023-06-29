@@ -12,6 +12,7 @@ import pl.datequests.quests.QuestSchema;
 import pl.datequests.quests.QuestState;
 import pl.datequests.util.RandomNumber;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,10 +43,12 @@ public class QuestPanel extends PluginGUI {
             }
         }
         setSlot(0, Material.BOOK, "Quest assign", getLore("New quests will assign every: " + questSchema.getQuestInterval().name()));
-        setSlot(9, Material.OAK_SIGN, "Category stats", getLore(
-                "Completed quests: " + completed,
-                "Quests assigned: " + getQuestsManager().getPlayersQuestsBySchema(getOwner().getName(), questSchema).size()));
-        setSlot(18, Material.CHEST, "Rewards", getLore("Get your rewards!"));
+        setSlot(9, Material.OAK_SIGN, getMessages().getMessage("statsName"), getLore(
+                getMessages().getMessage("statsCompleted") + completed,
+                getMessages().getMessage("statsAssigned") +
+                        getQuestsManager().getPlayersQuestsBySchema(getOwner().getName(), questSchema).size()));
+        setSlot(18, Material.CHEST, getMessages().getMessage("rewards"),
+                getLore(getMessages().getMessage("rewardsLore")));
         ItemStack changeItem = questSchema.getChangeQuestItem();
         String displayName = "";
         if(changeItem.getItemMeta() != null) {
@@ -58,8 +61,10 @@ public class QuestPanel extends PluginGUI {
                     "By clicking that, you'll change event for current quest in this category.",
                     "Cost: ", changeItem.getType().name() + " x" + changeItem.getAmount() + displayName));
         }
-        setSlot(47, Material.ARROW, "§f§lPrevious page", getLore("Go to previous page"));
-        setSlot(53, Material.ARROW, "§f§lNext page", getLore("Go to next page"));
+        setSlot(47, Material.ARROW, getMessages().getMessage("previousPage"),
+                getLore(getMessages().getMessage("previousPageLore")));
+        setSlot(53, Material.ARROW, getMessages().getMessage("nextPage"),
+                getLore(getMessages().getMessage("nextPageLore")));
         changeSortType();
     }
 
@@ -106,7 +111,7 @@ public class QuestPanel extends PluginGUI {
         }
         lastRandomizedMaterial = randomizedMaterial;
         setSlot(slots.get(0), randomizedMaterial,
-                "New quest", getLore("Click to take new quest!"));
+                getMessages().getMessage("newQuest"), getLore(getMessages().getMessage("clickToTakeNewQuest")));
         setSlotEnchanted(slots.get(0), true);
     }
 
@@ -141,20 +146,23 @@ public class QuestPanel extends PluginGUI {
             if(i > slots.size() - 1) {
                 break;
             }
+            boolean enchant = false;
             Material m = getQuestsManager().getEventMaterial(quest.getEvent());
-            String status = "§aCOMPLETED";
+            String status = getMessages().getMessage("questCompleted");
             if(quest.getQuestState().equals(QuestState.NOT_ACTIVE)) {
-                status = "§cNOT ACTIVE";
+                status = getMessages().getMessage("questNotActive");
                 m = Material.RED_CONCRETE;
             } else if(quest.getQuestState().equals(QuestState.NOT_COMPLETED)) {
-                status = "§cYou still don't completed this quest!";
-                setSlotEnchanted(slots.get(i), true);
+                status = getMessages().getMessage("questNotCompleted");
+                enchant = true;
             }
-            setSlot(slots.get(i), m, quest.getDateTag(),
-                    getLore("" + quest.getEvent(),
-                            "Progress: " + quest.getProgress() + "/" + quest.getRequiredProgress(),
+            setSlot(slots.get(i), m, "§6" + quest.getDateTag(),
+                    getLore("§2" + quest.getTranslatedEvent(),
+                            MessageFormat.format(getMessages().getMessage("progress"), quest.getProgress(), quest.getRequiredProgress()),
                             status));
+            setSlotEnchanted(slots.get(i), enchant);
             i++;
+
         }
     }
 
@@ -186,11 +194,12 @@ public class QuestPanel extends PluginGUI {
             currentSortType = SortType.getNext(currentSortType);
         }
         int index = SortType.getIndex(currentSortType);
-        setSlot(50, Material.HOPPER, "§f§lSort", getLore("Now sorted by:",
-                (index == 0 ? "§a§l" : "§6") + " NEWEST ASSIGNED",
-                (index == 1 ? "§a§l" : "§6") + " OLDEST ASSIGNED",
-                (index == 2 ? "§a§l" : "§6") + " COMPLETED",
-                (index == 3 ? "§a§l" : "§6") + " NOT COMPLETED"));
+        setSlot(50, Material.HOPPER, getMessages().getMessage("sort"), getLore(
+                getMessages().getMessage("nowSorted"),
+                (index == 0 ? "§a§l" : "§6") + getMessages().getMessage("newestAssignedSort"),
+                (index == 1 ? "§a§l" : "§6") + getMessages().getMessage("oldestAssignedSort"),
+                (index == 2 ? "§a§l" : "§6") + getMessages().getMessage("completedSort"),
+                (index == 3 ? "§a§l" : "§6") + getMessages().getMessage("notCompletedSort")));
         currentOffset = 0;
         loadQuests();
     }

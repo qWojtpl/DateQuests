@@ -25,7 +25,8 @@ public class QuestList extends PluginGUI {
         this.slots = new ArrayList<>();
         int numberOfSchemas = schemas.size();
         if(numberOfSchemas == 0) {
-            setSlot(22, Material.BARRIER, "&4No available quests", getLore("&cThere's no available quests!"));
+            setSlot(22, Material.BARRIER, getMessages().getMessage("noAvailableQuests"),
+                    getLore(getMessages().getMessage("noAvailableQuestsLore")));
             return;
         } if(numberOfSchemas == 1) {
             slots.add(22);

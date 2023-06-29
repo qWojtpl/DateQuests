@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import pl.datequests.DateQuests;
+import pl.datequests.data.MessagesManager;
 
 @Getter
 @Setter
@@ -28,6 +29,16 @@ public class Quest {
         }
         setEvent(questSchema.getRandomEvent(owner));
         progress = 0;
+    }
+
+    public String getTranslatedEvent() {
+        MessagesManager messages = DateQuests.getInstance().getMessagesManager();
+        String returnable = event;
+        returnable = returnable
+                .replaceFirst("kill", messages.getMessage("eventKill"))
+                .replaceFirst("break", messages.getMessage("eventBreak"))
+                .replaceFirst("deliver", messages.getMessage("eventDeliver"));
+        return returnable;
     }
 
     public void setEvent(String event) {

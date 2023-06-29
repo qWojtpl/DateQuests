@@ -1,6 +1,5 @@
 package pl.datequests.gui.list;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -42,9 +41,12 @@ public class RewardPanel extends PluginGUI {
                 slots.add(i);
             }
         }
-        setSlot(46, Material.ARROW, "Previous page", getLore("Go to previous page"));
-        setSlot(49, Material.CHEST, "Receive all rewards", getLore("Click to receive all rewards"));
-        setSlot(52, Material.ARROW, "Next page", getLore("Go to next page"));
+        setSlot(46, Material.ARROW, getMessages().getMessage("previousPage"),
+                getLore(getMessages().getMessage("previousPageLore")));
+        setSlot(49, Material.CHEST, getMessages().getMessage("receiveAllRewards"),
+                getLore(getMessages().getMessage("receiveAllRewardsLore")));
+        setSlot(52, Material.ARROW, getMessages().getMessage("nextPage"),
+                getLore(getMessages().getMessage("nextPageLore")));
         loadRewards();
     }
 
@@ -99,7 +101,7 @@ public class RewardPanel extends PluginGUI {
                     lore = new ArrayList<>();
                 }
                 lore.add(" ");
-                lore.add("§a§lCLICK TO RECEIVE");
+                lore.add(getMessages().getMessage("receiveReward"));
                 im.setLore(lore);
                 itemStack.setItemMeta(im);
             }
@@ -108,7 +110,8 @@ public class RewardPanel extends PluginGUI {
             i++;
         }
         if(rewards.size() == 0) {
-            setSlot(22, Material.BARRIER, "No rewards", getLore("You don't have any rewards. Get it by completing quests!"));
+            setSlot(22, Material.BARRIER, getMessages().getMessage("noRewards"),
+                    getLore(getMessages().getMessage("noRewardsLore")));
         }
     }
 

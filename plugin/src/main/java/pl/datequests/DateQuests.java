@@ -19,9 +19,9 @@ public final class DateQuests extends JavaPlugin {
 
     private static DateQuests main;
     private DateManager dateManager;
+    private MessagesManager messagesManager;
     private QuestsManager questsManager;
     private GUIManager guiManager;
-    private MessagesManager messagesManager;
     private PermissionManager permissionManager;
     private CitizensController citizensController;
     private DataHandler dataHandler;
@@ -33,9 +33,9 @@ public final class DateQuests extends JavaPlugin {
     public void onEnable() {
         main = this;
         this.dateManager = new DateManager();
+        this.messagesManager = new MessagesManager();
         this.questsManager = new QuestsManager();
         this.guiManager = new GUIManager();
-        this.messagesManager = new MessagesManager();
         this.permissionManager = new PermissionManager();
         if(getServer().getPluginManager().getPlugin("Citizens") == null) {
             getLogger().info("Not found Citizens plugin!");

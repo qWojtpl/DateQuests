@@ -8,18 +8,21 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import pl.datequests.DateQuests;
+import pl.datequests.data.MessagesManager;
 import pl.datequests.gui.SortType;
 import pl.datequests.util.DateManager;
 import pl.datequests.util.PlayerUtil;
 import pl.datequests.util.RandomNumber;
 
 import javax.annotation.Nullable;
+import java.text.MessageFormat;
 import java.util.*;
 
 @Getter
 public class QuestsManager {
 
     private final DateQuests plugin = DateQuests.getInstance();
+    private final MessagesManager messages = plugin.getMessagesManager();
     private final List<QuestSchema> questSchemas = new ArrayList<>();
     private final HashMap<String, List<Quest>> quests = new HashMap<>();
     private final HashMap<String, List<ItemStack>> rewards = new HashMap<>();
@@ -46,9 +49,11 @@ public class QuestsManager {
                 QuestSchema questSchema = quest.getQuestSchema();
                 p.sendMessage("§6{========================}");
                 p.sendMessage(" ");
-                p.sendMessage(" §eQuest completed: §2" + questSchema.getSchemaName());
-                p.sendMessage(" §2" + quest.getEvent());
-                p.sendMessage(" §eProgress: §f" + quest.getProgress() + "§6/§2" + quest.getRequiredProgress());
+                p.sendMessage(" " + messages.getMessage("completed") + "§2" + questSchema.getSchemaName());
+                p.sendMessage(" §2" + quest.getTranslatedEvent());
+                p.sendMessage(" " + MessageFormat.format(messages.getMessage("progress"),
+                        quest.getProgress(),
+                        quest.getRequiredProgress()));
                 if(questSchema.getRewards().size() != 0) {
                     if(questSchema.getRewardType().equals(RewardType.ALL)) {
                         for(ItemStack is : questSchema.getRewards()) {
@@ -58,16 +63,17 @@ public class QuestsManager {
                         assignReward(player,
                                 questSchema.getRewards().get(RandomNumber.randomInt(0, questSchema.getRewards().size() - 1)));
                     }
-                    p.sendMessage(" §aYou have new assigned reward");
+                    p.sendMessage(" " + messages.getMessage("newAssignedReward"));
                 }
                 if(isCompletedAllQuests(player) && rewardForAll.size() != 0) {
-                    p.sendMessage(" §a§lYou have completed all quests in month. There's special reward waiting for you!");
+                    p.sendMessage(" " + messages.getMessage("assignedMonthReward"));
                     assignMonthReward(player);
                 }
                 p.sendMessage(" ");
                 p.sendMessage("§6{========================}");
             } else {
-                PlayerUtil.sendActionBarMessage(p, "§aYou scored in quest " + quest.getQuestSchema().getSchemaName());
+                PlayerUtil.sendActionBarMessage(p,
+                        MessageFormat.format(messages.getMessage("scoredInQuest"), quest.getQuestSchema().getSchemaName()));
             }
         }
         quest.saveProgress();
@@ -152,17 +158,17 @@ public class QuestsManager {
         assignQuest(player, q);
         q.save();
         PlayerUtil.sendTitle(
-                p, "§eAccepted quest: §6" + schema.getSchemaName(),
-                "§6" + q.getEvent(),
+                p, getMessages().getMessage("acceptedQuest") + "§6" + schema.getSchemaName(),
+                "§6" + q.getTranslatedEvent(),
                 10,
                 100,
                 10
         );
         p.sendMessage("§6{========================}");
         p.sendMessage(" ");
-        p.sendMessage(" §eAccepted quest: §2" + schema.getSchemaName());
-        p.sendMessage(" §2" + q.getEvent());
-        p.sendMessage(" §eProgress: §f0§6/§2" + q.getRequiredProgress());
+        p.sendMessage(" " + getMessages().getMessage("acceptedQuest") + "§2" + schema.getSchemaName());
+        p.sendMessage(" §2" + q.getTranslatedEvent());
+        p.sendMessage(" " + MessageFormat.format(getMessages().getMessage("progress"), 0, q.getRequiredProgress()));
         p.sendMessage(" ");
         p.sendMessage("§6{========================}");
         p.playSound(p, Sound.ENTITY_VILLAGER_TRADE, 1.0F, 1.25F);
@@ -362,7 +368,7 @@ public class QuestsManager {
             return;
         }
         if(!schema.isChangeable()) {
-            p.sendMessage("You can't change this quest.");
+            p.sendMessage(messages.getMessage("cantChangeQuest"));
         }
         List<Quest> playerQuests = getPlayersQuestsBySchema(player, schema);
         Quest quest = null;
@@ -373,18 +379,18 @@ public class QuestsManager {
             }
         }
         if(quest == null) {
-            p.sendMessage("You don't have any active quest in this category.");
+            p.sendMessage(messages.getMessage("noActiveQuest"));
             return;
         }
         if(quest.isChanged()) {
-            p.sendMessage("You've already changed this quest!");
+            p.sendMessage(messages.getMessage("questAlreadyChanged"));
             return;
         }
         List<ItemStack> items = new ArrayList<>();
         items.add(schema.getChangeQuestItem());
         List<Integer> itemSlots = getItemSlots(p, items);
         if(itemSlots.size() == 0) {
-            p.sendMessage("You don't have required items to change quest!");
+            p.sendMessage(messages.getMessage("noRequiredItems"));
             return;
         }
         takeItems(p, itemSlots, items);
@@ -392,16 +398,16 @@ public class QuestsManager {
         quest.setChanged(true);
         quest.save();
         PlayerUtil.sendTitle(p,
-                "§eChanged quest: §6" + schema.getSchemaName(),
+                getMessages().getMessage("changedQuest") + "§6" + schema.getSchemaName(),
                 "§6" + quest.getEvent(),
                 10,
                 100,
                 10);
         p.sendMessage("§6{========================}");
         p.sendMessage(" ");
-        p.sendMessage(" §eChanged quest: §2" + schema.getSchemaName());
-        p.sendMessage(" §2" + quest.getEvent());
-        p.sendMessage(" §eProgress: §f0§6/§2" + quest.getRequiredProgress());
+        p.sendMessage(" " + getMessages().getMessage("changedQuest") + "§2" + schema.getSchemaName());
+        p.sendMessage(" §2" + quest.getTranslatedEvent());
+        p.sendMessage(" " + MessageFormat.format(getMessages().getMessage("progress"), 0, quest.getRequiredProgress()));
         p.sendMessage(" ");
         p.sendMessage("§6{========================}");
     }

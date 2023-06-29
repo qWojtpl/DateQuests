@@ -40,7 +40,8 @@ public class Commands implements CommandExecutor {
             dataHandler.save();
         }
         dataHandler.loadAll();
-        sender.sendMessage(messages.getMessage("reloaded") + (save ? " (Saved all data)" : " (Skipped saving)"));
+        sender.sendMessage(messages.getMessage("reloaded") + " "
+                + (save ? messages.getMessage("savedData") : messages.getMessage("skippedSave")));
     }
 
     public void openGUI(Player sender) {
