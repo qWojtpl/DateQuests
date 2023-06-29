@@ -20,6 +20,7 @@ public class QuestSchema {
     private ItemStack icon;
     private String dateTag;
     private int tagID;
+    private boolean changeable;
     private RewardType rewardType;
     private List<ItemStack> rewards = new ArrayList<>();
     private final List<QuestGroup> questGroups = new ArrayList<>();

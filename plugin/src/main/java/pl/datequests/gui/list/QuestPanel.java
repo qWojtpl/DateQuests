@@ -53,9 +53,11 @@ public class QuestPanel extends PluginGUI {
                 displayName = "(" + changeItem.getItemMeta().getDisplayName() + ")";
             }
         }
-        setSlot(27, Material.ENDER_EYE, "Change quest", getLore(
-                "By clicking that, you'll change event for current quest in this category.",
-                "Cost: ", changeItem.getType().name() + " x" + changeItem.getAmount() + displayName));
+        if(questSchema.isChangeable()) {
+            setSlot(27, Material.ENDER_EYE, "Change quest", getLore(
+                    "By clicking that, you'll change event for current quest in this category.",
+                    "Cost: ", changeItem.getType().name() + " x" + changeItem.getAmount() + displayName));
+        }
         setSlot(47, Material.ARROW, "§f§lPrevious page", getLore("Go to previous page"));
         setSlot(53, Material.ARROW, "§f§lNext page", getLore("Go to next page"));
         changeSortType();
@@ -146,6 +148,7 @@ public class QuestPanel extends PluginGUI {
                 m = Material.RED_CONCRETE;
             } else if(quest.getQuestState().equals(QuestState.NOT_COMPLETED)) {
                 status = "§cYou still don't completed this quest!";
+                setSlotEnchanted(slots.get(i), true);
             }
             setSlot(slots.get(i), m, quest.getDateTag(),
                     getLore("" + quest.getEvent(),
@@ -193,6 +196,9 @@ public class QuestPanel extends PluginGUI {
     }
 
     private void changeEvent() {
+        if(!questSchema.isChangeable()) {
+            return;
+        }
         getQuestsManager().changeActiveQuestEvent(getOwner().getName(), questSchema);
         closeInventory();
     }

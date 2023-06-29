@@ -67,6 +67,7 @@ public class DataHandler {
                         schema.getQuestGroups().add(questGroup);
                     }
                 }
+                schema.setChangeable(yml.getBoolean(path + "changeable"));
                 schema.setRewards(ItemLoader.getItemStackList(yml, path + "rewards.items"));
                 RewardType rewardType = RewardType.ALL;
                 String rewardTypeStr = yml.getString(path + "rewards.rewardType");

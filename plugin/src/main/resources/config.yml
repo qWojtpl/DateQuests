@@ -41,6 +41,7 @@ quests:
         1:
           event: kill %random% cow
           range: 5-10
+    changeable: true
     changeQuestItem:
       material: DIAMOND
       amount: 1
@@ -52,7 +53,9 @@ quests:
           amount: 1
 
 everythingInMonthReward:
+  type: ALL
   0:
     material: DIAMOND
+    name: "%year% %month% diamond"
     amount: 64
 

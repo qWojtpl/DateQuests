@@ -38,7 +38,11 @@ public class QuestsManager {
             if(completed) {
                 p.playSound(p, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.0F);
                 QuestSchema questSchema = quest.getQuestSchema();
-                PlayerUtil.sendActionBarMessage(p, "§aYou completed quest " + questSchema.getSchemaName());
+                p.sendMessage("§6{========================}");
+                p.sendMessage(" ");
+                p.sendMessage(" §eQuest completed: §2" + questSchema.getSchemaName());
+                p.sendMessage(" §2" + quest.getEvent());
+                p.sendMessage(" §eProgress: §f" + quest.getProgress() + "§6/§2" + quest.getRequiredProgress());
                 if(questSchema.getRewards().size() != 0) {
                     if(questSchema.getRewardType().equals(RewardType.ALL)) {
                         for(ItemStack is : questSchema.getRewards()) {
@@ -48,10 +52,13 @@ public class QuestsManager {
                         assignReward(player,
                                 questSchema.getRewards().get(RandomNumber.randomInt(0, questSchema.getRewards().size() - 1)));
                     }
+                    p.sendMessage(" §aYou have new assigned reward");
                 }
                 if(isCompletedAllQuests(player)) {
-                    p.sendMessage("§aYou have completed all quests in this month. You've got special reward!");
+                    p.sendMessage(" §a§lYou have completed all quests in month. There's special reward waiting for you!");
                 }
+                p.sendMessage(" ");
+                p.sendMessage("§6{========================}");
             } else {
                 PlayerUtil.sendActionBarMessage(p, "§aYou scored in quest " + quest.getQuestSchema().getSchemaName());
             }
@@ -85,8 +92,9 @@ public class QuestsManager {
         q.setQuestSchema(schema);
         q.setDateTag(schema.getDateTag());
         q.setTagID(schema.getTagID());
-        q.randomizeEvent();
+        q.randomizeEvent(false);
         assignQuest(player, q);
+        q.save();
         PlayerUtil.sendTitle(
                 p, "§eAccepted quest: §6" + schema.getSchemaName(),
                 "§6" + q.getEvent(),
@@ -94,7 +102,14 @@ public class QuestsManager {
                 100,
                 10
         );
-        q.save();
+        p.sendMessage("§6{========================}");
+        p.sendMessage(" ");
+        p.sendMessage(" §eAccepted quest: §2" + schema.getSchemaName());
+        p.sendMessage(" §2" + q.getEvent());
+        p.sendMessage(" §eProgress: §f0§6/§2" + q.getRequiredProgress());
+        p.sendMessage(" ");
+        p.sendMessage("§6{========================}");
+        p.playSound(p, Sound.ENTITY_VILLAGER_TRADE, 1.0F, 1.25F);
         return true;
     }
 
@@ -290,6 +305,9 @@ public class QuestsManager {
         if(p == null) {
             return;
         }
+        if(!schema.isChangeable()) {
+            p.sendMessage("You can't change this quest.");
+        }
         List<Quest> playerQuests = getPlayersQuestsBySchema(player, schema);
         Quest quest = null;
         for(Quest q : playerQuests) {
@@ -314,15 +332,22 @@ public class QuestsManager {
             return;
         }
         takeItems(p, itemSlots, items);
-        quest.randomizeEvent();
+        quest.randomizeEvent(true);
+        quest.setChanged(true);
+        quest.save();
         PlayerUtil.sendTitle(p,
                 "§eChanged quest: §6" + schema.getSchemaName(),
                 "§6" + quest.getEvent(),
                 10,
                 100,
                 10);
-        quest.setChanged(true);
-        quest.save();
+        p.sendMessage("§6{========================}");
+        p.sendMessage(" ");
+        p.sendMessage(" §eChanged quest: §2" + schema.getSchemaName());
+        p.sendMessage(" §2" + quest.getEvent());
+        p.sendMessage(" §eProgress: §f0§6/§2" + quest.getRequiredProgress());
+        p.sendMessage(" ");
+        p.sendMessage("§6{========================}");
     }
 
     public List<Integer> getItemSlots(Player player, List<ItemStack> items) {
