@@ -1,10 +1,12 @@
 package pl.datequests.quests;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import pl.datequests.DateQuests;
 import pl.datequests.gui.SortType;
 import pl.datequests.util.DateManager;
@@ -21,6 +23,10 @@ public class QuestsManager {
     private final List<QuestSchema> questSchemas = new ArrayList<>();
     private final HashMap<String, List<Quest>> quests = new HashMap<>();
     private final HashMap<String, List<ItemStack>> rewards = new HashMap<>();
+    @Setter
+    private List<ItemStack> rewardForAll = new ArrayList<>();
+    @Setter
+    private RewardType rewardForAllType;
     private int dateCheckTask = -1;
 
     public void addQuestSchema(QuestSchema schema) {
@@ -54,8 +60,9 @@ public class QuestsManager {
                     }
                     p.sendMessage(" §aYou have new assigned reward");
                 }
-                if(isCompletedAllQuests(player)) {
+                if(isCompletedAllQuests(player) && rewardForAll.size() != 0) {
                     p.sendMessage(" §a§lYou have completed all quests in month. There's special reward waiting for you!");
+                    assignMonthReward(player);
                 }
                 p.sendMessage(" ");
                 p.sendMessage("§6{========================}");
@@ -79,6 +86,55 @@ public class QuestsManager {
         rewards.put(player, playerRewards);
     }
 
+    public void assignMonthReward(String player) {
+        DateManager dateManager = plugin.getDateManager();
+        if(rewardForAllType.equals(RewardType.ALL)) {
+            for(ItemStack is : rewardForAll) {
+                ItemMeta im = is.getItemMeta();
+                if(im != null) {
+                    im.setDisplayName(im.getDisplayName()
+                            .replace("%year%", dateManager.getFormattedDate("%Y"))
+                            .replace("%month%", dateManager.getFormattedDate("%M")));
+                    is.setItemMeta(im);
+                    if(im.getLore() != null) {
+                        List<String> lore = im.getLore();
+                        List<String> newLore = new ArrayList<>();
+                        for(String line : lore) {
+                            newLore.add(line
+                                    .replace("%year%", dateManager.getFormattedDate("%Y"))
+                                    .replace("%month%", dateManager.getFormattedDate("%M")));
+                        }
+                        im.setLore(newLore);
+                    }
+                }
+                assignReward(player, is);
+            }
+        } else if(rewardForAllType.equals(RewardType.RANDOM)) {
+            if(rewardForAll.size() == 0) {
+                return;
+            }
+            ItemStack is = rewardForAll.get(RandomNumber.randomInt(0, rewardForAll.size() - 1));
+            ItemMeta im = is.getItemMeta();
+            if(im != null) {
+                im.setDisplayName(im.getDisplayName()
+                        .replace("%year%", dateManager.getFormattedDate("%Y"))
+                        .replace("%month%", dateManager.getFormattedDate("%M")));
+                if(im.getLore() != null) {
+                    List<String> lore = im.getLore();
+                    List<String> newLore = new ArrayList<>();
+                    for(String line : lore) {
+                        newLore.add(line
+                                .replace("%year%", dateManager.getFormattedDate("%Y"))
+                                .replace("%month%", dateManager.getFormattedDate("%M")));
+                    }
+                    im.setLore(newLore);
+                }
+                is.setItemMeta(im);
+            }
+            assignReward(player, is);
+        }
+    }
+
     public boolean takeQuest(String player, QuestSchema schema) {
         if(!isPlayerCanTakeQuest(player, schema)) {
             return false;
@@ -92,7 +148,7 @@ public class QuestsManager {
         q.setQuestSchema(schema);
         q.setDateTag(schema.getDateTag());
         q.setTagID(schema.getTagID());
-        q.randomizeEvent(false);
+        q.randomizeEvent();
         assignQuest(player, q);
         q.save();
         PlayerUtil.sendTitle(
@@ -332,7 +388,7 @@ public class QuestsManager {
             return;
         }
         takeItems(p, itemSlots, items);
-        quest.randomizeEvent(true);
+        quest.randomizeEvent();
         quest.setChanged(true);
         quest.save();
         PlayerUtil.sendTitle(p,

@@ -46,16 +46,17 @@ quests:
       material: DIAMOND
       amount: 1
     rewards:
-      type: RANDOM
+      rewardType: RANDOM
       items:
         0:
           material: DIAMOND
           amount: 1
 
 everythingInMonthReward:
-  type: ALL
-  0:
-    material: DIAMOND
-    name: "%year% %month% diamond"
-    amount: 64
+  rewardType: ALL
+  items:
+    0:
+      material: DIAMOND
+      name: "%year% %month% diamond"
+      amount: 64
 

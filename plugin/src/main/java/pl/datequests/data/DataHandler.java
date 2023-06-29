@@ -29,6 +29,7 @@ public class DataHandler {
 
     public void loadConfig() {
         questsManager.getQuestSchemas().clear();
+        questsManager.getRewardForAll().clear();
         YamlConfiguration yml = YamlConfiguration.loadConfiguration(getConfigFile());
         loadAllPlayers = yml.getBoolean("config.loadAllPlayers");
         if(plugin.isUsingCitizens()) {
@@ -81,6 +82,16 @@ public class DataHandler {
                 questsManager.addQuestSchema(schema);
             }
         }
+        RewardType rewardType = RewardType.ALL;
+        String rewardTypeStr = yml.getString("everythingInMonthReward.rewardType");
+        try {
+            rewardType = RewardType.valueOf(rewardTypeStr);
+        } catch(IllegalArgumentException e) {
+            plugin.getLogger().severe(rewardTypeStr +
+                    " is not correct RewardType! Correct RewardType is RANDOM or ALL. Replacing with ALL...");
+        }
+        questsManager.setRewardForAllType(rewardType);
+        questsManager.setRewardForAll(ItemLoader.getItemStackList(yml, "everythingInMonthReward.items"));
     }
 
     public void loadData() {

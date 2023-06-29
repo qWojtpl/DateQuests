@@ -22,7 +22,7 @@ public class Quest {
     private String dateTag;
     private int tagID;
 
-    public void randomizeEvent(boolean changed) {
+    public void randomizeEvent() {
         if(changed) {
             return;
         }
