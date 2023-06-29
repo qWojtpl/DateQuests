@@ -16,6 +16,9 @@ config:
   # May affect performance (depends on player count saved in data.yml)
   loadAllPlayers: false
 
+npc:
+  name: "DateQuests NPC"
+
 quests:
   day:
     icon:

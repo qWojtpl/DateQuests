@@ -46,6 +46,12 @@ public class Quest {
             requiredProgress = 1;
             this.event = "break 1 bedrock";
         }
+        if(split[0].equalsIgnoreCase("deliver")) {
+            if(!DateQuests.getInstance().isUsingCitizens()) {
+                DateQuests.getInstance().getLogger().warning(
+                        "Event deliver is not possible, since you're not using Citizens!");
+            }
+        }
     }
 
     public void setTagID(int id) {

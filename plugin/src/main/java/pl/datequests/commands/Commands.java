@@ -30,7 +30,7 @@ public class Commands implements CommandExecutor {
             }
         }
         if(sender instanceof Player) {
-            new QuestList((Player) sender, messages.getMessage("guiTitle"));
+            openGUI((Player) sender);
         }
         return true;
     }
@@ -41,6 +41,10 @@ public class Commands implements CommandExecutor {
         }
         dataHandler.loadAll();
         sender.sendMessage(messages.getMessage("reloaded") + (save ? "(Saved all data)" : "(Skipped saving)"));
+    }
+
+    public void openGUI(Player sender) {
+        new QuestList(sender, messages.getMessage("guiTitle"));
     }
 
 }

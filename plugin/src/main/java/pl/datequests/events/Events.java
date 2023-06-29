@@ -36,8 +36,7 @@ public class Events implements Listener {
             return;
         }
         String player = event.getPlayer().getName();
-        List<Quest> playersActiveQuests = questsManager.getPlayersActiveQuests(player);
-        for(Quest q : playersActiveQuests) {
+        for(Quest q : questsManager.getPlayersActiveQuests(player)) {
             if(questsManager.isQuestForEvent(q, "break", event.getBlock().getType().name())) {
                 questsManager.addProgress(q, 1);
             }
@@ -50,8 +49,7 @@ public class Events implements Listener {
             return;
         }
         String player = event.getEntity().getKiller().getName();
-        List<Quest> playersActiveQuests = questsManager.getPlayersActiveQuests(player);
-        for(Quest q : playersActiveQuests) {
+        for(Quest q : questsManager.getPlayersActiveQuests(player)) {
             if(questsManager.isQuestForEvent(q, "kill", event.getEntity().getType().name())) {
                 questsManager.addProgress(q, 1);
             }

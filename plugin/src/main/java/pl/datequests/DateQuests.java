@@ -42,6 +42,7 @@ public final class DateQuests extends JavaPlugin {
         } else {
             getLogger().info("Found Citizens!");
             this.citizensController = new CitizensController();
+            getServer().getPluginManager().registerEvents(citizensController, this);
         }
         this.dataHandler = new DataHandler();
         this.commands = new Commands();

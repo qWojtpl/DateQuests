@@ -6,7 +6,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import pl.datequests.DateQuests;
 import pl.datequests.quests.*;
-import pl.datequests.util.LocationUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,9 +32,7 @@ public class DataHandler {
         YamlConfiguration yml = YamlConfiguration.loadConfiguration(getConfigFile());
         loadAllPlayers = yml.getBoolean("config.loadAllPlayers");
         if(plugin.isUsingCitizens()) {
-            plugin.getCitizensController().createNPC(
-                    yml.getString("npc.skin", "Assasin98980"),
-                    LocationUtil.parseLocation(yml.getString("npc.spawnLocation", "")));
+            plugin.getCitizensController().setNpcName(yml.getString("npc.name", "DateQuests NPC"));
         }
         ConfigurationSection questsSection = yml.getConfigurationSection("quests");
         if(questsSection != null) {
