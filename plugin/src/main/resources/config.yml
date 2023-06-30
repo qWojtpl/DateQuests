@@ -16,8 +16,19 @@ config:
   # May affect performance (depends on player count saved in data.yml)
   loadAllPlayers: false
 
+  saveInterval: 10
+
 npc:
   name: "DateQuests NPC"
+
+permissions:
+  reload: "dq.reload"
+  lookup: "dq.lookup"
+  lookupSwitchComplete: "dq.lookup.switchcomplete"
+  lookupRemoveReward: "dq.lookup.removereward"
+  lookupChangeEvent: "dq.lookup.changeevent"
+  save: "dq.save"
+  loadPlayer: "dq.loadplayer"
 
 quests:
   day:
@@ -26,6 +37,7 @@ quests:
       amount: 1
       name: "&aEasy quests"
     interval: DAY
+    permission: "dq.quests.day"
     questGroups:
       0:
         0:

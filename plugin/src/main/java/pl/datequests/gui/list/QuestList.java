@@ -21,7 +21,12 @@ public class QuestList extends PluginGUI {
     public void onOpen() {
         setGUIProtected(true);
         fillWith(Material.GRAY_STAINED_GLASS_PANE);
-        List<QuestSchema> schemas = DateQuests.getInstance().getQuestsManager().getQuestSchemas();
+        List<QuestSchema> schemas = new ArrayList<>();
+        for(QuestSchema schema : getQuestsManager().getQuestSchemas()) {
+            if(getOwner().hasPermission(schema.getPermission())) {
+                schemas.add(schema);
+            }
+        }
         this.slots = new ArrayList<>();
         int numberOfSchemas = schemas.size();
         if(numberOfSchemas == 0) {

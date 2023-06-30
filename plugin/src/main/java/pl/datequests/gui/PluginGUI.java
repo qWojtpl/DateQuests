@@ -139,6 +139,10 @@ public abstract class PluginGUI {
 
     }
 
+    public void onClick(int slot, boolean rightClick) {
+
+    }
+
     public void onUpdate() {
 
     }

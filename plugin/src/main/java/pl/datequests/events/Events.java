@@ -15,8 +15,6 @@ import pl.datequests.gui.PluginGUI;
 import pl.datequests.quests.Quest;
 import pl.datequests.quests.QuestsManager;
 
-import java.util.List;
-
 public class Events implements Listener {
 
     private final DateQuests plugin = DateQuests.getInstance();
@@ -63,6 +61,7 @@ public class Events implements Listener {
             return;
         }
         gui.onClick(event.getSlot());
+        gui.onClick(event.getSlot(), event.isRightClick());
         if(gui.isGuiProtected()) {
             event.setCancelled(true);
         }

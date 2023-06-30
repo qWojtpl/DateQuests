@@ -22,6 +22,7 @@ public class QuestSchema {
     private int tagID;
     private boolean changeable;
     private RewardType rewardType;
+    private String permission;
     private List<ItemStack> rewards = new ArrayList<>();
     private final List<QuestGroup> questGroups = new ArrayList<>();
     private final HashMap<String, List<Integer>> monthTags = new HashMap<>();

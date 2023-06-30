@@ -5,6 +5,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import pl.datequests.DateQuests;
+import pl.datequests.permissions.PermissionManager;
 import pl.datequests.quests.*;
 
 import java.io.File;
@@ -19,12 +20,15 @@ public class DataHandler {
     private final QuestsManager questsManager = plugin.getQuestsManager();
     private YamlConfiguration data;
     private boolean loadAllPlayers;
+    private int saveTask = -1;
+    private int saveInterval;
     private final List<String> playerLoaded = new ArrayList<>();
 
     public void loadAll() {
         loadConfig();
         loadData();
         loadMessages();
+        registerSaveTask();
     }
 
     public void loadConfig() {
@@ -32,8 +36,16 @@ public class DataHandler {
         questsManager.getRewardForAll().clear();
         YamlConfiguration yml = YamlConfiguration.loadConfiguration(getConfigFile());
         loadAllPlayers = yml.getBoolean("config.loadAllPlayers");
+        saveInterval = yml.getInt("config.saveInterval");
         if(plugin.isUsingCitizens()) {
             plugin.getCitizensController().setNpcName(yml.getString("npc.name", "DateQuests NPC"));
+        }
+        ConfigurationSection permissionSection = yml.getConfigurationSection("permissions");
+        if(permissionSection != null) {
+            PermissionManager permissionManager = plugin.getPermissionManager();
+            for(String permissionName : permissionSection.getKeys(false)) {
+                permissionManager.registerPermission(permissionName, yml.getString("permissions." + permissionName));
+            }
         }
         ConfigurationSection questsSection = yml.getConfigurationSection("quests");
         if(questsSection != null) {
@@ -50,6 +62,7 @@ public class DataHandler {
                     continue;
                 }
                 schema.setQuestInterval(interval);
+                schema.setPermission(yml.getString(path + "permission", ""));
                 schema.setChangeQuestItem(ItemLoader.getItemStack(yml, path + "changeQuestItem"));
                 schema.setIcon(ItemLoader.getItemStack(yml, path + "icon"));
                 ConfigurationSection groupSection = yml.getConfigurationSection(path + "questGroups");
@@ -188,6 +201,15 @@ public class DataHandler {
         for(String key : messagesSection.getKeys(false)) {
             messagesManager.addMessage(key, yml.getString("messages." + key));
         }
+    }
+
+    public void registerSaveTask() {
+        if(saveTask != -1) {
+            plugin.getServer().getScheduler().cancelTask(saveTask);
+        }
+        saveTask = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin,
+                () -> plugin.getServer().getScheduler().runTaskAsynchronously(plugin, this::save),
+                saveInterval, saveInterval);
     }
 
     public void save() {
