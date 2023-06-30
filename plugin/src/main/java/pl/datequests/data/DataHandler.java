@@ -36,7 +36,7 @@ public class DataHandler {
         questsManager.getRewardForAll().clear();
         YamlConfiguration yml = YamlConfiguration.loadConfiguration(getConfigFile());
         loadAllPlayers = yml.getBoolean("config.loadAllPlayers");
-        saveInterval = yml.getInt("config.saveInterval");
+        saveInterval = yml.getInt("config.saveInterval", 10);
         if(plugin.isUsingCitizens()) {
             plugin.getCitizensController().setNpcName(yml.getString("npc.name", "DateQuests NPC"));
         }

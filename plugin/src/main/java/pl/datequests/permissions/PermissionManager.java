@@ -24,7 +24,7 @@ public class PermissionManager {
     }
 
     public Permission getPermission(String name) {
-        return permissions.getOrDefault(name, null);
+        return permissions.getOrDefault(name, new Permission(""));
     }
 
 }

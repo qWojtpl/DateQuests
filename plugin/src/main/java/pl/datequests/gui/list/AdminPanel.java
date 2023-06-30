@@ -9,4 +9,5 @@ public class AdminPanel extends PluginGUI {
         super(owner, inventoryName, 54);
     }
 
+
 }
