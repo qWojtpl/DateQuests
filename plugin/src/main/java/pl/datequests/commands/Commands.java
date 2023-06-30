@@ -44,7 +44,31 @@ public class Commands implements CommandExecutor {
     }
 
     public void help(CommandSender sender) {
-
+        sender.sendMessage("§6{========================}");
+        sender.sendMessage(" ");
+        boolean haveAnyCommand = false;
+        if(sender.hasPermission(permissionManager.getPermission("reload"))) {
+            haveAnyCommand = true;
+            sender.sendMessage(" §6/§edq reload §6- §2Reloads configuration and saves data.");
+            sender.sendMessage(" §6/§edq reload §f--skipsave §6- §2Reloads configuration but loading data from file.");
+        }
+        if(sender.hasPermission(permissionManager.getPermission("load"))) {
+            haveAnyCommand = true;
+            sender.sendMessage(" §6/§edq load §f<player> §6- §2Loads player's data.");
+        }
+        if(sender.hasPermission(permissionManager.getPermission("lookup"))) {
+            haveAnyCommand = true;
+            sender.sendMessage(" §6/§edq lookup §f<player> §6- §2Lookups about player's data (rewards, quests).");
+        }
+        if(sender.hasPermission(permissionManager.getPermission("save"))) {
+            haveAnyCommand = true;
+            sender.sendMessage(" §6/§edq save §6- §2Saves data into file, not reloading configuration.");
+        }
+        if(!haveAnyCommand) {
+            sender.sendMessage(" " + messages.getMessage("noAccessToSubcommands"));
+        }
+        sender.sendMessage(" ");
+        sender.sendMessage("§6{========================}");
     }
 
     public void reload(CommandSender sender, String[] args) {
@@ -90,6 +114,7 @@ public class Commands implements CommandExecutor {
             return;
         }
         sender.sendMessage(messages.getMessage("saved"));
+        dataHandler.save();
     }
 
     public void openGUI(Player sender) {

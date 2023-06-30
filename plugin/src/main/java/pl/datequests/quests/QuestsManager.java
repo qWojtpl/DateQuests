@@ -368,6 +368,7 @@ public class QuestsManager {
             return;
         }
         if(!schema.isChangeable()) {
+            p.playSound(p, Sound.ENTITY_VILLAGER_NO, 1.0F, 1.5F);
             p.sendMessage(messages.getMessage("cantChangeQuest"));
         }
         List<Quest> playerQuests = getPlayersQuestsBySchema(player, schema);
@@ -379,10 +380,12 @@ public class QuestsManager {
             }
         }
         if(quest == null) {
+            p.playSound(p, Sound.ENTITY_VILLAGER_NO, 1.0F, 1.5F);
             p.sendMessage(messages.getMessage("noActiveQuest"));
             return;
         }
         if(quest.isChanged()) {
+            p.playSound(p, Sound.ENTITY_VILLAGER_NO, 1.0F, 1.5F);
             p.sendMessage(messages.getMessage("questAlreadyChanged"));
             return;
         }
@@ -397,6 +400,7 @@ public class QuestsManager {
         quest.randomizeEvent();
         quest.setChanged(true);
         quest.save();
+        p.playSound(p, Sound.BLOCK_END_PORTAL_SPAWN, 1.0F, 1.0F);
         PlayerUtil.sendTitle(p,
                 getMessages().getMessage("changedQuest") + "§6" + schema.getSchemaName(),
                 "§6" + quest.getEvent(),

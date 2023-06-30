@@ -22,6 +22,7 @@ public class DataHandler {
     private boolean loadAllPlayers;
     private int saveTask = -1;
     private int saveInterval;
+    private boolean saving;
     private final List<String> playerLoaded = new ArrayList<>();
 
     public void loadAll() {
@@ -44,7 +45,10 @@ public class DataHandler {
         if(permissionSection != null) {
             PermissionManager permissionManager = plugin.getPermissionManager();
             for(String permissionName : permissionSection.getKeys(false)) {
-                permissionManager.registerPermission(permissionName, yml.getString("permissions." + permissionName));
+                permissionManager.registerPermission(
+                        permissionName,
+                        yml.getString("permissions." + permissionName),
+                        "Permission used by DateQuests plugin");
             }
         }
         ConfigurationSection questsSection = yml.getConfigurationSection("quests");
@@ -111,6 +115,7 @@ public class DataHandler {
         questsManager.getQuests().clear();
         questsManager.getRewards().clear();
         playerLoaded.clear();
+        data = null;
         data = YamlConfiguration.loadConfiguration(getDataFile());
         ConfigurationSection schemaSection = data.getConfigurationSection("schema");
         if(schemaSection != null) {
@@ -207,9 +212,13 @@ public class DataHandler {
         if(saveTask != -1) {
             plugin.getServer().getScheduler().cancelTask(saveTask);
         }
-        saveTask = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin,
-                () -> plugin.getServer().getScheduler().runTaskAsynchronously(plugin, this::save),
-                saveInterval, saveInterval);
+        saveTask = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+            if(saving) {
+                return;
+            }
+            saving = true;
+            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, this::save);
+        }, saveInterval, saveInterval);
     }
 
     public void save() {
@@ -218,6 +227,8 @@ public class DataHandler {
         } catch(IOException e) {
             plugin.getLogger().severe("Cannot save data.yml: " + e.getMessage());
             e.printStackTrace();
+        } finally {
+            saving = false;
         }
     }
 

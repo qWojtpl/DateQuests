@@ -13,18 +13,18 @@ public class PermissionManager {
     private final DateQuests plugin = DateQuests.getInstance();
     private final HashMap<String, Permission> permissions = new HashMap<>();
 
-    public void registerPermission(String name, String description) {
+    public void registerPermission(String key, String name, String description) {
         PluginManager pluginManager = plugin.getServer().getPluginManager();
         if(pluginManager.getPermission(name) != null) {
             pluginManager.removePermission(name);
         }
         Permission perm = new Permission(name, description);
         pluginManager.addPermission(perm);
-        permissions.put(name, perm);
+        permissions.put(key, perm);
     }
 
-    public Permission getPermission(String name) {
-        return permissions.getOrDefault(name, new Permission(""));
+    public Permission getPermission(String key) {
+        return permissions.getOrDefault(key, new Permission(""));
     }
 
 }
