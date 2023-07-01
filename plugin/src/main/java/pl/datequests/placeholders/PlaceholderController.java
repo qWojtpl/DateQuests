@@ -6,7 +6,9 @@ import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import pl.datequests.DateQuests;
+import pl.datequests.data.MessagesManager;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,8 +18,10 @@ import java.util.List;
 public class PlaceholderController extends PlaceholderExpansion {
 
     private final DateQuests main = DateQuests.getInstance();
+    private final MessagesManager messages = main.getMessagesManager();
     private final HashMap<String, Integer> playerScore = new HashMap<>();
-    private List<String> leaderboard = new ArrayList<>();
+    private final HashMap<String, String> playerLeaderboard = new HashMap<>();
+    private final List<String> leaderboard = new ArrayList<>();
     private int maxRecords;
     private int loadInterval;
     private int loadTask;
@@ -48,8 +52,11 @@ public class PlaceholderController extends PlaceholderExpansion {
                 }
                 return leaderboard.get(id);
             } catch(NumberFormatException ignored) {
-                return "&cNOT VALID NUMBER";
+                return "&cINVALID NUMBER";
             }
+        } else if(params.equalsIgnoreCase("playertop")) {
+            return playerLeaderboard.getOrDefault(player.getName(),
+                    "* §f" + player.getName() + " §c- §9" + playerScore.get(player.getName()));
         }
         return null;
     }
@@ -73,7 +80,8 @@ public class PlaceholderController extends PlaceholderExpansion {
     }
 
     public void loadLeaderboard() {
-        leaderboard = new ArrayList<>();
+        leaderboard.clear();
+        playerLeaderboard.clear();
         List<String> skipPlayers = new ArrayList<>();
         int index = 0;
         for(int i = 0; i < playerScore.size() && (maxRecords == -1 || i < maxRecords); i++) {
@@ -94,7 +102,16 @@ public class PlaceholderController extends PlaceholderExpansion {
                 }
             }
             skipPlayers.add(maxPlayer);
-            leaderboard.add("§f" + ++index + ". " + maxPlayer + " §c- §9" + playerScore.get(maxPlayer));
+            leaderboard.add(
+                    MessageFormat.format(messages.getMessage("placeholderRecord"),
+                            ++index,
+                            maxPlayer,
+                            playerScore.get(maxPlayer)));
+            playerLeaderboard.put(maxPlayer,
+                    MessageFormat.format(messages.getMessage("placeholderPlayerRecord"),
+                            index,
+                            maxPlayer,
+                            playerScore.get(maxPlayer)));
         }
     }
 

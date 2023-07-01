@@ -257,17 +257,11 @@ public class QuestsManager {
     }
 
     public List<ItemStack> getPlayersRewards(String player) {
-        if(rewards.containsKey(player)) {
-            return rewards.get(player);
-        }
-        return new ArrayList<>();
+        return rewards.getOrDefault(player, new ArrayList<>());
     }
 
     public List<Quest> getPlayersQuests(String player) {
-        if(quests.containsKey(player)) {
-            return quests.get(player);
-        }
-        return new ArrayList<>();
+        return quests.getOrDefault(player, new ArrayList<>());
     }
 
     public List<Quest> getPlayersQuestsBySchema(String player, QuestSchema schema) {

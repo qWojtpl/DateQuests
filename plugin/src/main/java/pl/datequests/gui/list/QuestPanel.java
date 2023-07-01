@@ -37,16 +37,25 @@ public class QuestPanel extends PluginGUI {
         fillWith(Material.BLACK_STAINED_GLASS_PANE);
         currentOffset = 0;
         int completed = 0;
+        int allCompleted = 0;
         for(Quest q : getQuestsManager().getPlayersQuestsBySchema(getOwner().getName(), questSchema)) {
             if(q.getQuestState().equals(QuestState.COMPLETED)) {
                 completed++;
             }
         }
+        for(Quest q : getQuestsManager().getPlayersQuests(getOwner().getName())) {
+            if(q.getQuestState().equals(QuestState.COMPLETED)) {
+                allCompleted++;
+            }
+        }
         setSlot(0, Material.BOOK, "Quest assign", getLore("New quests will assign every: " + questSchema.getQuestInterval().name()));
         setSlot(9, Material.OAK_SIGN, getMessages().getMessage("statsName"), getLore(
                 getMessages().getMessage("statsCompleted") + completed,
+                getMessages().getMessage("statsAllCompleted") + allCompleted,
                 getMessages().getMessage("statsAssigned") +
-                        getQuestsManager().getPlayersQuestsBySchema(getOwner().getName(), questSchema).size()));
+                        getQuestsManager().getPlayersQuestsBySchema(getOwner().getName(), questSchema).size(),
+                getMessages().getMessage("statsAllAssigned") +
+                        getQuestsManager().getPlayersQuests(getOwner().getName()).size()));
         setSlot(18, Material.CHEST, getMessages().getMessage("rewards"),
                 getLore(getMessages().getMessage("rewardsLore")));
         ItemStack changeItem = questSchema.getChangeQuestItem();

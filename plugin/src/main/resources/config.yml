@@ -16,14 +16,31 @@ config:
   # May affect performance (depends on player count saved in data.yml)
   loadAllPlayers: false
 
-  saveInterval: 10
+  # Specify save interval in seconds. In default, every 120 seconds all data
+  # will be saved to data.yml
+  saveInterval: 120
 
+  # When set to true plugin will load leaderboard from data.yml
+  # Leaderboard will work only with PAPI (PlaceholderAPI)
+  # PAPI fields:
+  #   %datequests_top_<number>% - iteration starts from 0, you can have as many top requests as you want
+  #   %datequests_playertop% - returns player's completed quests count and their place in leaderboard if available
   loadLeaderboard: true
+
+  # If you have 120 players saved in data.yml, but you don't want to load these
+  # all players into leaderboard, you can set leaderboardMaxRecords. In default,
+  # only 10 players will be loaded.
   leaderboardMaxRecords: 10
+
+  # Leaderboard is not updating every update. This could cause performance issues.
+  # In default, leaderboard will update every 30 seconds.
   leaderboardUpdateInterval: 30
 
 
 npc:
+  # This section requires Citizens plugin.
+  # If npc with this name will be clicked, then DateQuests GUI will be
+  # opened to player. Player can deliver quests' items to this NPC.
   name: "DateQuests NPC"
 
 permissions:
@@ -63,6 +80,9 @@ quests:
       material: DIAMOND
       amount: 1
     rewards:
+      # Available reward types:
+      #   RANDOM - gives random rewards from the list below
+      #   ALL - gives all rewards from the list below
       rewardType: RANDOM
       items:
         0:
