@@ -71,6 +71,9 @@ public class QuestsManager {
                 }
                 p.sendMessage(" ");
                 p.sendMessage("§6{========================}");
+                if(plugin.isUsingPlaceholders()) {
+                    plugin.getPlaceholderController().addScore(player, 1);
+                }
             } else {
                 PlayerUtil.sendActionBarMessage(p,
                         MessageFormat.format(messages.getMessage("scoredInQuest"), quest.getQuestSchema().getSchemaName()));

@@ -18,6 +18,11 @@ config:
 
   saveInterval: 10
 
+  loadLeaderboard: true
+  leaderboardMaxRecords: 10
+  leaderboardUpdateInterval: 30
+
+
 npc:
   name: "DateQuests NPC"
 

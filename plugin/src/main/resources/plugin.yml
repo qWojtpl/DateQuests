@@ -6,6 +6,7 @@ authors: [Assasin98980]
 description: Add date quests to your Minecraft server
 softdepend:
   - Citizens
+  - PlaceholderAPI
 commands:
   datequests:
     description: Use DateQuests plugin

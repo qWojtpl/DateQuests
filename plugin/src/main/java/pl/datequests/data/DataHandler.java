@@ -23,6 +23,7 @@ public class DataHandler {
     private int saveTask = -1;
     private int saveInterval;
     private boolean saving;
+    private boolean loadLeaderboard;
     private final List<String> playerLoaded = new ArrayList<>();
 
     public void loadAll() {
@@ -40,6 +41,14 @@ public class DataHandler {
         saveInterval = yml.getInt("config.saveInterval", 10);
         if(plugin.isUsingCitizens()) {
             plugin.getCitizensController().setNpcName(yml.getString("npc.name", "DateQuests NPC"));
+        }
+        if(plugin.isUsingPlaceholders()) {
+            loadLeaderboard = yml.getBoolean("config.loadLeaderboard");
+            if(loadLeaderboard) {
+                plugin.getPlaceholderController().setMaxRecords(yml.getInt("config.leaderboardMaxRecords"));
+                plugin.getPlaceholderController().setLoadInterval(yml.getInt("config.leaderboardLoadInterval"));
+                plugin.getPlaceholderController().createLoadTask();
+            }
         }
         ConfigurationSection permissionSection = yml.getConfigurationSection("permissions");
         if(permissionSection != null) {
@@ -139,12 +148,25 @@ public class DataHandler {
             for(Player p : plugin.getServer().getOnlinePlayers()) {
                 loadPlayer(p.getName());
             }
-            return;
+        } else {
+            ConfigurationSection playerSection = data.getConfigurationSection("players");
+            if(playerSection != null) {
+                for(String nickname : playerSection.getKeys(false)) {
+                    loadPlayer(nickname);
+                }
+            }
         }
-        ConfigurationSection playerSection = data.getConfigurationSection("players");
-        if(playerSection != null) {
-            for(String nickname : playerSection.getKeys(false)) {
-                loadPlayer(nickname);
+        if(plugin.isUsingPlaceholders()) {
+            plugin.getPlaceholderController().getLeaderboard().clear();
+            plugin.getPlaceholderController().getPlayerScore().clear();
+            if(loadLeaderboard) {
+                ConfigurationSection leaderboardSection = data.getConfigurationSection("leaderboard");
+                if(leaderboardSection == null) {
+                    return;
+                }
+                for(String playerName : leaderboardSection.getKeys(false)) {
+                    plugin.getPlaceholderController().setScore(playerName, data.getInt("leaderboard." + playerName));
+                }
             }
         }
     }
@@ -218,7 +240,7 @@ public class DataHandler {
             }
             saving = true;
             plugin.getServer().getScheduler().runTaskAsynchronously(plugin, this::save);
-        }, saveInterval, saveInterval);
+        }, 20L * saveInterval, 20L * saveInterval);
     }
 
     public void save() {
@@ -263,6 +285,10 @@ public class DataHandler {
 
     public void savePlayerRewards(String player) {
         ItemLoader.parseList(data, "players." + player + ".--rewards", questsManager.getPlayersRewards(player));
+    }
+
+    public void saveLeaderboard(String player, int score) {
+        data.set("leaderboard." + player, score);
     }
 
     public File getConfigFile() {

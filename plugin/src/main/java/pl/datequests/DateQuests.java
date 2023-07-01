@@ -11,6 +11,7 @@ import pl.datequests.data.MessagesManager;
 import pl.datequests.events.Events;
 import pl.datequests.gui.GUIManager;
 import pl.datequests.permissions.PermissionManager;
+import pl.datequests.placeholders.PlaceholderController;
 import pl.datequests.quests.QuestsManager;
 import pl.datequests.util.DateManager;
 
@@ -24,6 +25,7 @@ public final class DateQuests extends JavaPlugin {
     private GUIManager guiManager;
     private PermissionManager permissionManager;
     private CitizensController citizensController;
+    private PlaceholderController placeholderController;
     private DataHandler dataHandler;
     private Commands commands;
     private CommandHelper commandHelper;
@@ -43,6 +45,13 @@ public final class DateQuests extends JavaPlugin {
             getLogger().info("Found Citizens!");
             this.citizensController = new CitizensController();
             getServer().getPluginManager().registerEvents(citizensController, this);
+        }
+        if(getServer().getPluginManager().getPlugin("PlaceholderAPI") == null) {
+            getLogger().info("Not found PlaceholderAPI plugin!");
+        } else {
+            getLogger().info("Found PlaceholderAPI!");
+            this.placeholderController = new PlaceholderController();
+            placeholderController.register();
         }
         this.dataHandler = new DataHandler();
         this.commands = new Commands();
@@ -74,6 +83,10 @@ public final class DateQuests extends JavaPlugin {
 
     public boolean isUsingCitizens() {
         return (citizensController != null);
+    }
+
+    public boolean isUsingPlaceholders() {
+        return (placeholderController != null);
     }
 
 }
