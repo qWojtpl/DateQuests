@@ -4,9 +4,11 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import pl.datequests.DateQuests;
 import pl.datequests.data.DataHandler;
 import pl.datequests.data.MessagesManager;
+import pl.datequests.gui.list.AdminPanel;
 import pl.datequests.gui.list.QuestList;
 import pl.datequests.permissions.PermissionManager;
 
@@ -20,7 +22,7 @@ public class Commands implements CommandExecutor {
     private final PermissionManager permissionManager = plugin.getPermissionManager();
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if(args.length > 0) {
             if(args[0].equalsIgnoreCase("reload")) {
                 reload(sender, args);
@@ -98,7 +100,7 @@ public class Commands implements CommandExecutor {
                 sender.sendMessage(messages.getMessage("playerAlreadyLoaded"));
             } else {
                 dataHandler.loadPlayer(args[1]);
-                sender.sendMessage(messages.getMessage("loadedPlayer") + args[0]);
+                sender.sendMessage(messages.getMessage("loadedPlayer") + args[1]);
             }
         } else {
             correctUsage(sender, "/dq load <player>");
@@ -106,11 +108,19 @@ public class Commands implements CommandExecutor {
     }
 
     public void lookup(CommandSender sender, String[] args) {
+        if(!(sender instanceof Player)) {
+            sender.sendMessage(messages.getMessage("mustBePlayer"));
+            return;
+        }
         if(!hasPermission(sender, "lookup")) {
             return;
         }
         if(args.length > 1) {
-
+            if(!dataHandler.getPlayerLoaded().contains(args[1])) {
+                sender.sendMessage(messages.getMessage("playerNotLoaded"));
+            } else {
+                new AdminPanel((Player) sender, messages.getMessage("lookupGUI") + args[1], args[1]);
+            }
         } else {
             correctUsage(sender, "/dq lookup <player>");
         }

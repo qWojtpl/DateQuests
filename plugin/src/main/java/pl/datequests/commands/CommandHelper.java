@@ -5,6 +5,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
+import org.jetbrains.annotations.NotNull;
 import pl.datequests.DateQuests;
 import pl.datequests.permissions.PermissionManager;
 
@@ -17,7 +18,7 @@ public class CommandHelper implements TabCompleter {
     private final PermissionManager permissionManager = plugin.getPermissionManager();
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         List<String> completions = new ArrayList<>();
         if(args.length == 1) {
             if(hasPermission(sender, "reload")) {
