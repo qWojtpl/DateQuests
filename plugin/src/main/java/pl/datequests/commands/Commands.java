@@ -106,7 +106,14 @@ public class Commands implements CommandExecutor {
     }
 
     public void lookup(CommandSender sender, String[] args) {
+        if(!hasPermission(sender, "lookup")) {
+            return;
+        }
+        if(args.length > 1) {
 
+        } else {
+            correctUsage(sender, "/dq lookup <player>");
+        }
     }
 
     public void save(CommandSender sender) {

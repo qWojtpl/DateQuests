@@ -14,7 +14,7 @@ public class GUIManager {
         guiList.add(gui);
     }
 
-    public void removeInventory(@Nullable PluginGUI gui) {
+    public void removeInventory(PluginGUI gui) {
         if(gui == null) {
             return;
         }

@@ -6,10 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import pl.datequests.gui.PluginGUI;
 import pl.datequests.gui.SortType;
-import pl.datequests.quests.Quest;
-import pl.datequests.quests.QuestGroup;
-import pl.datequests.quests.QuestSchema;
-import pl.datequests.quests.QuestState;
+import pl.datequests.quests.*;
 import pl.datequests.util.RandomNumber;
 
 import java.text.MessageFormat;
@@ -48,7 +45,14 @@ public class QuestPanel extends PluginGUI {
                 allCompleted++;
             }
         }
-        setSlot(0, Material.BOOK, "Quest assign", getLore("New quests will assign every: " + questSchema.getQuestInterval().name()));
+        String assign = getMessages().getMessage("everyDay");
+        if(questSchema.getQuestInterval().equals(QuestInterval.MONTH)) {
+            assign = getMessages().getMessage("everyMonth");
+        } else if(!questSchema.getQuestInterval().equals(QuestInterval.DAY)) {
+            assign = getMessages().getMessage("day" + questSchema.getQuestInterval().name());
+        }
+        setSlot(0, Material.BOOK, getMessages().getMessage("questAssign"),
+                getLore(getMessages().getMessage("questAssignLore") + assign));
         setSlot(9, Material.OAK_SIGN, getMessages().getMessage("statsName"), getLore(
                 getMessages().getMessage("statsCompleted") + completed,
                 getMessages().getMessage("statsAllCompleted") + allCompleted,
@@ -59,16 +63,16 @@ public class QuestPanel extends PluginGUI {
         setSlot(18, Material.CHEST, getMessages().getMessage("rewards"),
                 getLore(getMessages().getMessage("rewardsLore")));
         ItemStack changeItem = questSchema.getChangeQuestItem();
-        String displayName = "";
-        if(changeItem.getItemMeta() != null) {
-            if(!changeItem.getItemMeta().getDisplayName().equals("")) {
-                displayName = "(" + changeItem.getItemMeta().getDisplayName() + ")";
-            }
-        }
         if(questSchema.isChangeable()) {
-            setSlot(27, Material.ENDER_EYE, "Change quest", getLore(
-                    "By clicking that, you'll change event for current quest in this category.",
-                    "Cost: ", changeItem.getType().name() + " x" + changeItem.getAmount() + displayName));
+            String name = changeItem.getType().name();
+            if(changeItem.getItemMeta() != null) {
+                if(!changeItem.getItemMeta().getDisplayName().equals("")) {
+                    name = changeItem.getItemMeta().getDisplayName() + " (" + changeItem.getType().name() + ")";
+                }
+            }
+            setSlot(27, Material.ENDER_EYE, getMessages().getMessage("changeQuest"), getLore(
+                    MessageFormat.format(getMessages().getMessage("changeQuestLore"), name, changeItem.getAmount())
+            ));
         }
         setSlot(47, Material.ARROW, getMessages().getMessage("previousPage"),
                 getLore(getMessages().getMessage("previousPageLore")));

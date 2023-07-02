@@ -400,7 +400,7 @@ public class QuestsManager {
         p.playSound(p, Sound.BLOCK_END_PORTAL_SPAWN, 1.0F, 1.0F);
         PlayerUtil.sendTitle(p,
                 getMessages().getMessage("changedQuest") + "§6" + schema.getSchemaName(),
-                "§6" + quest.getEvent(),
+                "§6" + quest.getTranslatedEvent(),
                 10,
                 100,
                 10);
