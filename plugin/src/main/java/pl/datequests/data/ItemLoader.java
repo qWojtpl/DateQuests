@@ -2,8 +2,10 @@ package pl.datequests.data;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import pl.datequests.DateQuests;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +33,30 @@ public class ItemLoader {
                     newLore.add(line.replace("&", "§"));
                 }
                 im.setLore(newLore);
+            }
+            List<String> enchantments = yml.getStringList(path + "enchantments");
+            for(String enchant : enchantments) {
+                String[] split = enchant.split(":");
+                if(split.length != 2) {
+                    DateQuests.getInstance().getLogger().severe("Error while parsing ItemStack: "
+                            + enchant + " is not a correct enchantment format!");
+                    continue;
+                }
+                Enchantment realEnchantment = Enchantment.getByName(split[0]);
+                if(realEnchantment == null) {
+                    DateQuests.getInstance().getLogger().severe("Error while parsing ItemStack: "
+                            + split[0] + " is not a real enchantment!");
+                    continue;
+                }
+                int level;
+                try {
+                    level = Integer.parseInt(split[1]);
+                } catch(NumberFormatException e) {
+                    DateQuests.getInstance().getLogger().severe("Error while parsing ItemStack: "
+                            + split[1] + " is not a correct level!");
+                    continue;
+                }
+                im.addEnchant(realEnchantment, level, true);
             }
             is.setItemMeta(im);
         }
@@ -63,6 +89,11 @@ public class ItemLoader {
                 yml.set(currentPath + "name", im.getDisplayName());
             }
             yml.set(currentPath + "lore", im.getLore());
+            List<String> enchantments = new ArrayList<>();
+            for(Enchantment enchant : im.getEnchants().keySet()) {
+                enchantments.add(enchant + ":" + im.getEnchants().get(enchant));
+            }
+            yml.set(currentPath + "enchantments", enchantments);
             i++;
         }
     }
