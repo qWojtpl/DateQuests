@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import pl.datequests.DateQuests;
 import pl.datequests.data.MessagesManager;
+import pl.datequests.permissions.PermissionManager;
 import pl.datequests.quests.QuestsManager;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ public abstract class PluginGUI {
 
     private final QuestsManager questsManager = DateQuests.getInstance().getQuestsManager();
     private final MessagesManager messages = DateQuests.getInstance().getMessagesManager();
+    private final PermissionManager permissionManager = DateQuests.getInstance().getPermissionManager();
     private final Player owner;
     private final String inventoryName;
     private final int inventorySize;

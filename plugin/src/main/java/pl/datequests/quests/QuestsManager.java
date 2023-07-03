@@ -339,10 +339,12 @@ public class QuestsManager {
 
     public Material getEventMaterial(String event) {
         if(event == null) {
+            plugin.getLogger().severe("Event is null.");
             return Material.BEDROCK;
         }
         String[] split = event.split(" ");
         if(split.length != 3) {
+            plugin.getLogger().severe("Event split is not 3.");
             return Material.BEDROCK;
         }
         Material m = Material.getMaterial(split[2].toUpperCase());
@@ -354,6 +356,7 @@ public class QuestsManager {
                 }
             } else {
                 m = Material.BEDROCK;
+                plugin.getLogger().severe("Event: " + event + " is incorrect.");
             }
         }
         return m;

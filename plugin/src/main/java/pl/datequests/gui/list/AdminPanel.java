@@ -3,10 +3,15 @@ package pl.datequests.gui.list;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import pl.datequests.gui.PluginGUI;
 import pl.datequests.quests.Quest;
+import pl.datequests.quests.QuestState;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class AdminPanel extends PluginGUI {
@@ -15,7 +20,8 @@ public class AdminPanel extends PluginGUI {
     private int pageID = 0;
     private int currentOffset = 0;
     private final List<Integer> slots = new ArrayList<>();
-    private final List<Integer> interactableSlots = new ArrayList<>();
+    private final HashMap<Integer, Quest> questSlots = new HashMap<>();
+    private final HashMap<Integer, ItemStack> rewardSlots = new HashMap<>();
 
     public AdminPanel(Player owner, String inventoryName, String lookupPlayer) {
         super(owner, inventoryName, 54);
@@ -34,7 +40,7 @@ public class AdminPanel extends PluginGUI {
     }
 
     @Override
-    public void onClick(int slot) {
+    public void onClick(int slot, boolean rightClicked) {
         if(pageID == 0) {
             if (slot == 21) {
                 loadQuestsPage();
@@ -57,7 +63,45 @@ public class AdminPanel extends PluginGUI {
     public void loadQuests() {
         List<Quest> playerQuests = getQuestsManager().getPlayersQuests(lookupPlayer);
         int i = 0;
-
+        int j = 0;
+        for(Quest q : playerQuests) {
+            if(currentOffset > j) {
+                j++;
+                continue;
+            }
+            if(i > slots.size() - 1) {
+                break;
+            }
+            String additionalMessages = "";
+            if(getOwner().hasPermission(getPermissionManager().getPermission("lookupSwitchComplete"))) {
+                additionalMessages += "%nl%§aLEFT-CLICK TO RESET/COMPLETE QUEST";
+            }
+            if(getOwner().hasPermission(getPermissionManager().getPermission("lookupChangeEvent"))) {
+                additionalMessages += "%nl%§aRIGHT-CLICK TO CHANGE QUEST EVENT";
+            }
+            boolean enchant = false;
+            Material m = getQuestsManager().getEventMaterial(q.getEvent());
+            String status = getMessages().getMessage("questCompleted");
+            if(q.getQuestState().equals(QuestState.NOT_ACTIVE)) {
+                status = getMessages().getMessage("questNotActive");
+                m = Material.RED_CONCRETE;
+            } else if(q.getQuestState().equals(QuestState.NOT_COMPLETED)) {
+                status = getMessages().getMessage("questNotCompleted");
+                enchant = true;
+            }
+            setSlot(slots.get(i),
+                    m,
+                    "§6" + q.getQuestSchema().getSchemaName() + "§2:§6" + q.getDateTag(),
+                    getLore(
+                            "§2" + q.getTranslatedEvent(),
+                            "§2Type: §6" + q.getQuestSchema().getSchemaName(),
+                            MessageFormat.format(getMessages().getMessage("progress"), q.getProgress(), q.getRequiredProgress()),
+                            status,
+                            additionalMessages));
+            questSlots.put(slots.get(i), q);
+            setSlotEnchanted(slots.get(i), enchant);
+            i++;
+        }
     }
 
     public void loadRewardsPage() {
@@ -67,13 +111,42 @@ public class AdminPanel extends PluginGUI {
     }
 
     public void loadRewards() {
-
+        List<ItemStack> playerRewards = getQuestsManager().getPlayersRewards(lookupPlayer);
+        int i = 0;
+        int j = 0;
+        for(ItemStack is : playerRewards) {
+            if(currentOffset > j) {
+                j++;
+                continue;
+            }
+            if(i > slots.size() - 1) {
+                break;
+            }
+            ItemStack itemStack = is.clone();
+            if(getOwner().hasPermission(getPermissionManager().getPermission("lookupRemoveReward"))) {
+                ItemMeta im = itemStack.getItemMeta();
+                if(im != null) {
+                    List<String> lore = im.getLore();
+                    if(lore == null) {
+                        lore = new ArrayList<>();
+                    }
+                    lore.add(" ");
+                    lore.add("%nl%§a§lCLICK TO REMOVE REWARD");
+                    im.setLore(lore);
+                    itemStack.setItemMeta(im);
+                }
+            }
+            setSlot(slots.get(i), itemStack);
+            rewardSlots.put(slots.get(i), is);
+            i++;
+        }
     }
 
     private void loadFrame() {
         fillWith(Material.BLACK_STAINED_GLASS_PANE);
         slots.clear();
-        interactableSlots.clear();
+        questSlots.clear();
+        rewardSlots.clear();
         currentOffset = 0;
         int[] protectedSlots = new int[]{17, 18, 26, 27, 35, 36, 44};
         for(int i = 10; i < 45; i++) {
