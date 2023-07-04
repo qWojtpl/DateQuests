@@ -1,44 +1,32 @@
 package pl.datequests.data;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.profile.PlayerProfile;
-import org.bukkit.profile.PlayerTextures;
 import pl.datequests.DateQuests;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class ItemLoader {
 
     public static ItemStack getItemStack(YamlConfiguration yml, String path) {
         path += ".";
-        if(yml.getBoolean(path + "serialized")) {
-            if(yml.contains(path + "serializedItem")) {
-                HashMap<String, Object> serialization = new HashMap<>();
-                ConfigurationSection section = yml.getConfigurationSection(path + "serializedItem");
-                if(section == null) {
-                    return new ItemStack(Material.DIRT);
-                }
-                for(String key : section.getKeys(false)) {
-                    serialization.put(key, yml.get(path + "serializedItem." + key));
-                }
-                return ItemStack.deserialize(serialization);
-            }
-        }
         Material m = Material.getMaterial(yml.getString(path + "material", "DIRT").toUpperCase());
         if(m == null) {
             m = Material.DIRT;
         }
         ItemStack is = new ItemStack(m);
         is.setAmount(yml.getInt(path + "amount"));
+        if(yml.getBoolean(path + "loadMeta")) {
+            if(yml.contains(path + "meta")) {
+                is.setItemMeta((ItemMeta) yml.get(path + "meta"));
+                return is;
+            }
+        }
         ItemMeta im = is.getItemMeta();
         if(im != null) {
             String name = yml.getString(path + "name");
@@ -105,8 +93,8 @@ public class ItemLoader {
                 continue;
             }
             if(im instanceof SkullMeta) {
-                yml.set(currentPath + "serialized", true);
-                yml.set(currentPath + "serializedItem", is.serialize());
+                yml.set(currentPath + "loadMeta", true);
+                yml.set(currentPath + "meta", im);
                 i++;
                 continue;
             }
@@ -117,7 +105,7 @@ public class ItemLoader {
             if(im.getEnchants().size() > 0) {
                 List<String> enchantments = new ArrayList<>();
                 for(Enchantment enchant : im.getEnchants().keySet()) {
-                    enchantments.add(enchant + ":" + im.getEnchants().get(enchant));
+                    enchantments.add(enchant.getName() + ":" + im.getEnchants().get(enchant));
                 }
                 yml.set(currentPath + "enchantments", enchantments);
             }

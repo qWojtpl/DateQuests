@@ -1,13 +1,8 @@
 package pl.datequests.util;
 
 import lombok.Getter;
-import lombok.SneakyThrows;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 import static java.util.Calendar.*;
 
@@ -15,6 +10,7 @@ import static java.util.Calendar.*;
 public class DateManager {
 
     private final String[] dayNames = new String[]{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+    private final String[] monthNames = new String[]{"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
 
     public int getDaysOfMonth() {
         return getCalendar().getActualMaximum(DAY_OF_MONTH);
@@ -34,6 +30,10 @@ public class DateManager {
 
     public int getMonth() {
         return getCalendar().get(MONTH)+1;
+    }
+
+    public String getMonthName() {
+        return monthNames[getMonth() - 1];
     }
 
     public int getDay() {

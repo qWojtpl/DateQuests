@@ -103,18 +103,20 @@ public class QuestsManager {
                 if(im != null) {
                     im.setDisplayName(im.getDisplayName()
                             .replace("%year%", dateManager.getFormattedDate("%Y"))
-                            .replace("%month%", dateManager.getFormattedDate("%M")));
-                    is.setItemMeta(im);
+                            .replace("%month%", dateManager.getFormattedDate("%M"))
+                            .replace("%monthname%", messages.getMessage("month" + dateManager.getMonthName())));
                     if(im.getLore() != null) {
                         List<String> lore = im.getLore();
                         List<String> newLore = new ArrayList<>();
                         for(String line : lore) {
                             newLore.add(line
                                     .replace("%year%", dateManager.getFormattedDate("%Y"))
-                                    .replace("%month%", dateManager.getFormattedDate("%M")));
+                                    .replace("%month%", dateManager.getFormattedDate("%M"))
+                                    .replace("%monthname%", messages.getMessage("month" + dateManager.getMonthName())));
                         }
                         im.setLore(newLore);
                     }
+                    is.setItemMeta(im);
                 }
                 assignReward(player, is);
             }

@@ -152,9 +152,11 @@ public class Commands implements CommandExecutor {
         }
         Player p = (Player) sender;
         ItemStack is = p.getInventory().getItemInMainHand();
-        Map<String, Object> serialize = is.serialize();
-        for(String key : serialize.keySet()) {
-            sender.sendMessage("§2" + key + ": " + serialize.get(key));
+        if(is.getItemMeta() != null) {
+            sender.sendMessage("§2Meta: §6" + is.getItemMeta());
+            dataHandler.getData().set("lastSerialization", is.getItemMeta());
+        } else {
+            sender.sendMessage("§c-");
         }
     }
 

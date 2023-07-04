@@ -87,4 +87,10 @@ messages:
   monthMarch: "March"
   monthApril: "April"
   monthMay: "May"
-  m
+  monthJune: "June"
+  monthJuly: "July"
+  monthAugust: "August"
+  monthSeptember: "September"
+  monthOctober: "October"
+  monthNovember: "November"
+  monthDecember: "December"
