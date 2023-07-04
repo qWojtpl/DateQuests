@@ -89,11 +89,13 @@ public class ItemLoader {
                 yml.set(currentPath + "name", im.getDisplayName());
             }
             yml.set(currentPath + "lore", im.getLore());
-            List<String> enchantments = new ArrayList<>();
-            for(Enchantment enchant : im.getEnchants().keySet()) {
-                enchantments.add(enchant + ":" + im.getEnchants().get(enchant));
+            if(im.getEnchants().size() > 0) {
+                List<String> enchantments = new ArrayList<>();
+                for(Enchantment enchant : im.getEnchants().keySet()) {
+                    enchantments.add(enchant + ":" + im.getEnchants().get(enchant));
+                }
+                yml.set(currentPath + "enchantments", enchantments);
             }
-            yml.set(currentPath + "enchantments", enchantments);
             i++;
         }
     }

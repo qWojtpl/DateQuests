@@ -21,7 +21,7 @@ public class AdminPanel extends PluginGUI {
     private int currentOffset = 0;
     private final List<Integer> slots = new ArrayList<>();
     private final HashMap<Integer, Quest> questSlots = new HashMap<>();
-    private final HashMap<Integer, ItemStack> rewardSlots = new HashMap<>();
+    private final HashMap<Integer, Integer> rewardSlots = new HashMap<>();
 
     public AdminPanel(Player owner, String inventoryName, String lookupPlayer) {
         super(owner, inventoryName, 54);
@@ -40,7 +40,7 @@ public class AdminPanel extends PluginGUI {
     }
 
     @Override
-    public void onClick(int slot, boolean rightClicked) {
+    public void onClick(int slot, boolean rightClick) {
         if(pageID == 0) {
             if (slot == 21) {
                 loadQuestsPage();
@@ -51,6 +51,47 @@ public class AdminPanel extends PluginGUI {
             previousPage();
         } else if(slot == 52) {
             nextPage();
+        } else if(pageID == 1) {
+            if(questSlots.containsKey(slot)) {
+                Quest q = questSlots.get(slot);
+                if(rightClick) {
+                    if(getOwner().hasPermission(getPermissionManager().getPermission("lookupChangeEvent"))) {
+                        boolean changed = q.isChanged();
+                        if(changed) {
+                            q.setChanged(false);
+                        }
+                        q.randomizeEvent();
+                        q.updateTagID();
+                        q.setChanged(changed);
+                        q.save();
+                        getOwner().sendMessage(getMessages().getMessage("changedQuestEvent") + q.getTranslatedEvent());
+                        getOwner().playSound(getOwner(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.0F, 1.0F);
+                    }
+                } else {
+                    if(getOwner().hasPermission(getPermissionManager().getPermission("lookupSwitchComplete"))) {
+                        if(q.getQuestState().equals(QuestState.COMPLETED)) {
+                            q.setQuestState(QuestState.NOT_COMPLETED);
+                            q.setProgress(0);
+                            q.updateTagID();
+                        } else {
+                            q.setQuestState(QuestState.COMPLETED);
+                            q.setProgress(q.getRequiredProgress());
+                        }
+                        q.save();
+                        getOwner().sendMessage(getMessages().getMessage("changedQuestProgress") + q.getProgress());
+                        getOwner().playSound(getOwner(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.0F, 1.0F);
+                    }
+                }
+                loadQuests();
+            }
+        } else if(pageID == 2) {
+            if(rewardSlots.containsKey(slot)) {
+                if(getOwner().hasPermission(getPermissionManager().getPermission("lookupRemoveReward"))) {
+                    getQuestsManager().removeReward(lookupPlayer, rewardSlots.get(slot));
+                    getOwner().playSound(getOwner(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.0F, 1.0F);
+                    loadRewardsPage();
+                }
+            }
         }
     }
 
@@ -61,7 +102,7 @@ public class AdminPanel extends PluginGUI {
     }
 
     public void loadQuests() {
-        List<Quest> playerQuests = getQuestsManager().getPlayersQuests(lookupPlayer);
+        List<Quest> playerQuests = getQuestsManager().reverseList(getQuestsManager().getPlayersQuests(lookupPlayer));
         int i = 0;
         int j = 0;
         for(Quest q : playerQuests) {
@@ -74,10 +115,10 @@ public class AdminPanel extends PluginGUI {
             }
             String additionalMessages = "";
             if(getOwner().hasPermission(getPermissionManager().getPermission("lookupSwitchComplete"))) {
-                additionalMessages += "%nl%§aLEFT-CLICK TO RESET/COMPLETE QUEST";
+                additionalMessages += getMessages().getMessage("resetQuestClick");
             }
             if(getOwner().hasPermission(getPermissionManager().getPermission("lookupChangeEvent"))) {
-                additionalMessages += "%nl%§aRIGHT-CLICK TO CHANGE QUEST EVENT";
+                additionalMessages += getMessages().getMessage("changeQuestClick");
             }
             boolean enchant = false;
             Material m = getQuestsManager().getEventMaterial(q.getEvent());
@@ -94,7 +135,7 @@ public class AdminPanel extends PluginGUI {
                     "§6" + q.getQuestSchema().getSchemaName() + "§2:§6" + q.getDateTag(),
                     getLore(
                             "§2" + q.getTranslatedEvent(),
-                            "§2Type: §6" + q.getQuestSchema().getSchemaName(),
+                            getMessages().getMessage("type") + q.getQuestSchema().getSchemaName(),
                             MessageFormat.format(getMessages().getMessage("progress"), q.getProgress(), q.getRequiredProgress()),
                             status,
                             additionalMessages));
@@ -131,22 +172,22 @@ public class AdminPanel extends PluginGUI {
                         lore = new ArrayList<>();
                     }
                     lore.add(" ");
-                    lore.add("%nl%§a§lCLICK TO REMOVE REWARD");
+                    lore.add(getMessages().getMessage("removeRewardClick"));
                     im.setLore(lore);
                     itemStack.setItemMeta(im);
                 }
             }
             setSlot(slots.get(i), itemStack);
-            rewardSlots.put(slots.get(i), is);
+            rewardSlots.put(slots.get(i), i);
             i++;
         }
     }
 
     private void loadFrame() {
-        fillWith(Material.BLACK_STAINED_GLASS_PANE);
-        slots.clear();
         questSlots.clear();
         rewardSlots.clear();
+        slots.clear();
+        fillWith(Material.BLACK_STAINED_GLASS_PANE);
         currentOffset = 0;
         int[] protectedSlots = new int[]{17, 18, 26, 27, 35, 36, 44};
         for(int i = 10; i < 45; i++) {
@@ -159,7 +200,7 @@ public class AdminPanel extends PluginGUI {
             }
             if(!isProtected) {
                 slots.add(i);
-                setSlot(i, Material.WHITE_STAINED_GLASS_PANE, "", getLore(""));
+                setSlot(i, Material.WHITE_STAINED_GLASS_PANE, " ", getLore(""));
             }
         }
         setSlot(46, Material.ARROW, getMessages().getMessage("previousPage"),

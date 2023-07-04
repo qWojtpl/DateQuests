@@ -136,7 +136,7 @@ public class QuestPanel extends PluginGUI {
             if(isProtectedSlot(protectedSlots, i)) {
                 continue;
             }
-            setSlot(i, Material.WHITE_STAINED_GLASS_PANE, "", getLore(""));
+            setSlot(i, Material.WHITE_STAINED_GLASS_PANE, " ", getLore(""));
             slots.add(i);
         }
         int i = 0;

@@ -56,7 +56,10 @@ public class PlaceholderController extends PlaceholderExpansion {
             }
         } else if(params.equalsIgnoreCase("playertop")) {
             return playerLeaderboard.getOrDefault(player.getName(),
-                    "* §f" + player.getName() + " §c- §9" + playerScore.get(player.getName()));
+                    MessageFormat.format(messages.getMessage("placeholderPlayerRecord"),
+                            "?",
+                            player.getName(),
+                            playerScore.get(player.getName())));
         }
         return null;
     }

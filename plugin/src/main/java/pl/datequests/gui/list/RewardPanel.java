@@ -73,7 +73,7 @@ public class RewardPanel extends PluginGUI {
 
     public void loadRewards() {
         for(int slot : slots) {
-            setSlot(slot, Material.WHITE_STAINED_GLASS_PANE, "", getLore(""));
+            setSlot(slot, Material.WHITE_STAINED_GLASS_PANE, " ", getLore(""));
         }
         itemSlots = new ArrayList<>();
         List<ItemStack> rewards = getQuestsManager().getPlayersRewards(getOwner().getName());

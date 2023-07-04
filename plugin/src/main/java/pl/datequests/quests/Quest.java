@@ -70,7 +70,11 @@ public class Quest {
         if(this.questState.equals(QuestState.COMPLETED)) {
             return;
         }
-        if(id < questSchema.getTagID()) {
+        updateTagID();
+    }
+
+    public void updateTagID() {
+        if(this.tagID < questSchema.getTagID()) {
             this.questState = QuestState.NOT_ACTIVE;
         }
     }

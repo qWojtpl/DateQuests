@@ -197,6 +197,16 @@ public class QuestsManager {
         }
     }
 
+    public void removeReward(String player, int rewardIndex) {
+        List<ItemStack> playerRewards = getPlayersRewards(player);
+        if(rewardIndex > playerRewards.size() - 1) {
+            return;
+        }
+        playerRewards.remove(rewardIndex);
+        rewards.put(player, playerRewards);
+        plugin.getDataHandler().savePlayerRewards(player);
+    }
+
     @Nullable
     public QuestSchema getQuestSchema(String name) {
         for(QuestSchema schema : questSchemas) {
