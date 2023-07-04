@@ -51,6 +51,7 @@ permissions:
   lookupChangeEvent: "dq.lookup.changeevent"
   save: "dq.save"
   loadPlayer: "dq.loadplayer"
+  serialize: "dq.serialize"
 
 quests:
   day:

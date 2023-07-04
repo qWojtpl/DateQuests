@@ -33,6 +33,9 @@ public class CommandHelper implements TabCompleter {
             if(hasPermission(sender, "save")) {
                 completions.add("save");
             }
+            if(hasPermission(sender, "serialize")) {
+                completions.add("serialize");
+            }
         } else if(args.length == 2) {
             if(args[0].equalsIgnoreCase("reload") && hasPermission(sender, "reload")) {
                 completions.add("--skipsave");

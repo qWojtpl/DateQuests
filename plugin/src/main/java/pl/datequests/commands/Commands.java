@@ -4,6 +4,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import pl.datequests.DateQuests;
 import pl.datequests.data.DataHandler;
@@ -13,6 +14,7 @@ import pl.datequests.gui.list.QuestList;
 import pl.datequests.permissions.PermissionManager;
 
 import java.text.MessageFormat;
+import java.util.Map;
 
 public class Commands implements CommandExecutor {
 
@@ -32,6 +34,8 @@ public class Commands implements CommandExecutor {
                 lookup(sender, args);
             } else if(args[0].equalsIgnoreCase("save")) {
                 save(sender);
+            } else if(args[0].equalsIgnoreCase("serialize")) {
+                serialize(sender);
             } else {
                 help(sender);
             }
@@ -65,6 +69,10 @@ public class Commands implements CommandExecutor {
         if(sender.hasPermission(permissionManager.getPermission("save"))) {
             haveAnyCommand = true;
             sender.sendMessage(" §6/§edq save §6- §2Saves data into file, not reloading configuration.");
+        }
+        if(sender.hasPermission(permissionManager.getPermission("serialize"))) {
+            haveAnyCommand = true;
+            sender.sendMessage(" §6/§edq serialize §6- §2Serialize item in your hand");
         }
         if(!haveAnyCommand) {
             sender.sendMessage(" " + messages.getMessage("noAccessToSubcommands"));
@@ -132,6 +140,22 @@ public class Commands implements CommandExecutor {
         }
         sender.sendMessage(messages.getMessage("saved"));
         dataHandler.save();
+    }
+
+    public void serialize(CommandSender sender) {
+        if(!(sender instanceof Player)) {
+            sender.sendMessage(messages.getMessage("mustBePlayer"));
+            return;
+        }
+        if(!hasPermission(sender, "serialize")) {
+            return;
+        }
+        Player p = (Player) sender;
+        ItemStack is = p.getInventory().getItemInMainHand();
+        Map<String, Object> serialize = is.serialize();
+        for(String key : serialize.keySet()) {
+            sender.sendMessage("§2" + key + ": " + serialize.get(key));
+        }
     }
 
     public void openGUI(Player sender) {

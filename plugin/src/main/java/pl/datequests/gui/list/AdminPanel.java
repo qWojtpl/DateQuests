@@ -61,6 +61,7 @@ public class AdminPanel extends PluginGUI {
                             q.setChanged(false);
                         }
                         q.randomizeEvent();
+                        q.setQuestState(QuestState.NOT_COMPLETED);
                         q.updateTagID();
                         q.setChanged(changed);
                         q.save();

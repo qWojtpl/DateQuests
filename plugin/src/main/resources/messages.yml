@@ -82,3 +82,9 @@ messages:
   changeQuestClick: "%nl%&aRIGHT-CLICK TO CHANGE QUEST EVENT"
   removeRewardClick: "&aCLICK TO REMOVE REWARD"
   type: "&2Type: &6"
+  monthJanuary: "January"
+  monthFebruary: "February"
+  monthMarch: "March"
+  monthApril: "April"
+  monthMay: "May"
+  m
