@@ -14,7 +14,6 @@ import static java.util.Calendar.*;
 @Getter
 public class DateManager {
 
-    private Calendar fakeCalendar = null;
     private final String[] dayNames = new String[]{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
     public int getDaysOfMonth() {
@@ -64,41 +63,7 @@ public class DateManager {
     }
 
     public Calendar getCalendar() {
-        Calendar cal;
-        if(fakeCalendar != null) {
-            cal = fakeCalendar;
-        } else {
-            cal = Calendar.getInstance();
-        }
-        return cal;
-    }
-
-    public void createFakeCalendar(int year, int month, int day, int hour, int minute, int second) {
-        removeFakeCalendar();
-        fakeCalendar = Calendar.getInstance();
-        fakeCalendar.set(YEAR, year);
-        fakeCalendar.set(MONTH, month);
-        fakeCalendar.set(DAY_OF_MONTH, day);
-        fakeCalendar.set(HOUR_OF_DAY, hour);
-        fakeCalendar.set(MINUTE, minute);
-        fakeCalendar.set(SECOND, second);
-    }
-
-    public void removeFakeCalendar() {
-        fakeCalendar = null;
-    }
-
-    public boolean isUsingFakeCalendar() {
-        return (fakeCalendar != null);
-    }
-
-    @SneakyThrows
-    public static long calculateDays(String startDate, String endDate, String separator) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy" + separator + "MM" + separator + "dd", Locale.ENGLISH);
-        Date dStart = sdf.parse(startDate);
-        Date dEnd = sdf.parse(endDate);
-        long diffInMillis = Math.abs(dEnd.getTime() - dStart.getTime());
-        return TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS);
+        return Calendar.getInstance();
     }
 
 }

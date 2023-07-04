@@ -4,7 +4,7 @@ messages:
   noPermission: "%prefix%&cYou don't have permission!"
   correctUsage: "%prefix%&cCorrect usage: &6{0}"
   noAccessToSubcommands: "&cYou don't have access to any subcommand."
-  mustBePlayer: "%player%&cYou must be a player!"
+  mustBePlayer: "%prefix%&cYou must be a player!"
   lookupGUI: "&2&lLookup - &6"
   reloaded: "%prefix%&aReloaded!"
   saved: "%prefix%&aSaved all data."
