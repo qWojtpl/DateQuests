@@ -75,7 +75,6 @@ public class DataHandler {
                     continue;
                 }
                 schema.setQuestInterval(interval);
-                schema.setPermission(yml.getString(path + "permission", ""));
                 schema.setChangeQuestItem(ItemLoader.getItemStack(yml, path + "changeQuestItem"));
                 schema.setIcon(ItemLoader.getItemStack(yml, path + "icon"));
                 ConfigurationSection groupSection = yml.getConfigurationSection(path + "questGroups");

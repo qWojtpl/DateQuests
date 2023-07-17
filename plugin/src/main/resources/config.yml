@@ -60,7 +60,6 @@ quests:
       amount: 1
       name: "&aEasy quests"
     interval: DAY
-    permission: "dq.quests.day"
     questGroups:
       0:
         0:

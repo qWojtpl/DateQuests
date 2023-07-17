@@ -2,7 +2,6 @@ package pl.datequests.gui.list;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import pl.datequests.DateQuests;
 import pl.datequests.gui.PluginGUI;
 import pl.datequests.quests.QuestSchema;
 
@@ -21,12 +20,7 @@ public class QuestList extends PluginGUI {
     public void onOpen() {
         setGUIProtected(true);
         fillWith(Material.GRAY_STAINED_GLASS_PANE);
-        List<QuestSchema> schemas = new ArrayList<>();
-        for(QuestSchema schema : getQuestsManager().getQuestSchemas()) {
-            if(getOwner().hasPermission(schema.getPermission())) {
-                schemas.add(schema);
-            }
-        }
+        List<QuestSchema> schemas = new ArrayList<>(getQuestsManager().getQuestSchemas());
         this.slots = new ArrayList<>();
         int numberOfSchemas = schemas.size();
         if(numberOfSchemas == 0) {

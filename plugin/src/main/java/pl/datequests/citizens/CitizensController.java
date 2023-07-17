@@ -14,8 +14,6 @@ import pl.datequests.quests.Quest;
 import pl.datequests.quests.QuestState;
 import pl.datequests.quests.QuestsManager;
 
-import java.text.MessageFormat;
-
 @Getter
 @Setter
 public class CitizensController implements Listener {

@@ -14,7 +14,6 @@ import pl.datequests.gui.list.QuestList;
 import pl.datequests.permissions.PermissionManager;
 
 import java.text.MessageFormat;
-import java.util.Map;
 
 public class Commands implements CommandExecutor {
 
