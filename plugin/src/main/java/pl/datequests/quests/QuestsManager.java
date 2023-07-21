@@ -172,7 +172,12 @@ public class QuestsManager {
         p.sendMessage("§6{========================}");
         p.sendMessage(" ");
         p.sendMessage(" " + getMessages().getMessage("acceptedQuest") + "§2" + schema.getSchemaName());
-        p.sendMessage(" §2" + q.getTranslatedEvent());
+        if(!plugin.isUsingNBTAPI()) {
+            p.sendMessage(" §2" + q.getTranslatedEvent());
+        } else {
+            plugin.getNbtAPIController().sendTranslatedEvent(p, " ", q.getTranslatedEvent(), "");
+            plugin.getNbtAPIController().sendTranslatedSubtitle(p, q.getTranslatedEvent());
+        }
         p.sendMessage(" " + MessageFormat.format(getMessages().getMessage("progress"), 0, q.getRequiredProgress()));
         p.sendMessage(" ");
         p.sendMessage("§6{========================}");
@@ -361,7 +366,7 @@ public class QuestsManager {
         }
         Material m = Material.getMaterial(split[2].toUpperCase());
         if(m == null) {
-            if(split[0].equalsIgnoreCase("kill")) {
+            if(split[0].equalsIgnoreCase("kill") || split[0].equalsIgnoreCase(messages.getMessage("eventKill"))) {
                 m = Material.getMaterial(split[2].toUpperCase() + "_SPAWN_EGG");
                 if(m == null) {
                     m = Material.BEDROCK;
@@ -382,6 +387,7 @@ public class QuestsManager {
         if(!schema.isChangeable()) {
             p.playSound(p, Sound.ENTITY_VILLAGER_NO, 1.0F, 1.5F);
             p.sendMessage(messages.getMessage("cantChangeQuest"));
+            return;
         }
         List<Quest> playerQuests = getPlayersQuestsBySchema(player, schema);
         Quest quest = null;
@@ -422,7 +428,12 @@ public class QuestsManager {
         p.sendMessage("§6{========================}");
         p.sendMessage(" ");
         p.sendMessage(" " + getMessages().getMessage("changedQuest") + "§2" + schema.getSchemaName());
-        p.sendMessage(" §2" + quest.getTranslatedEvent());
+        if(!plugin.isUsingNBTAPI()) {
+            p.sendMessage(" §2" + quest.getTranslatedEvent());
+        } else {
+            plugin.getNbtAPIController().sendTranslatedEvent(p, " ", quest.getTranslatedEvent(), "");
+            plugin.getNbtAPIController().sendTranslatedSubtitle(p, quest.getTranslatedEvent());
+        }
         p.sendMessage(" " + MessageFormat.format(getMessages().getMessage("progress"), 0, quest.getRequiredProgress()));
         p.sendMessage(" ");
         p.sendMessage("§6{========================}");

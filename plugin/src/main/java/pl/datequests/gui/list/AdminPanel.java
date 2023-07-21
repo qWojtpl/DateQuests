@@ -142,6 +142,7 @@ public class AdminPanel extends PluginGUI {
                             additionalMessages));
             questSlots.put(slots.get(i), q);
             setSlotEnchanted(slots.get(i), enchant);
+            updateLoreForNBT(slots.get(i), q.getTranslatedEvent(), 0);
             i++;
         }
     }

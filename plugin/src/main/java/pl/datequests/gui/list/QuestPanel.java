@@ -174,6 +174,7 @@ public class QuestPanel extends PluginGUI {
                             MessageFormat.format(getMessages().getMessage("progress"), quest.getProgress(), quest.getRequiredProgress()),
                             status));
             setSlotEnchanted(slots.get(i), enchant);
+            updateLoreForNBT(slots.get(i), quest.getTranslatedEvent(),0);
             i++;
 
         }

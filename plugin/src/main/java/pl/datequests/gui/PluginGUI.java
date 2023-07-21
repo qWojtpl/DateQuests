@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import pl.datequests.DateQuests;
 import pl.datequests.data.MessagesManager;
+import pl.datequests.nbtapi.NBTAPIController;
 import pl.datequests.permissions.PermissionManager;
 import pl.datequests.quests.QuestsManager;
 
@@ -66,6 +67,13 @@ public abstract class PluginGUI {
         }
         is.setItemMeta(im);
         setSlot(slot, is);
+    }
+
+    public void updateLoreForNBT(int slot, String event, int index) {
+        if(!DateQuests.getInstance().isUsingNBTAPI()) {
+            return;
+        }
+        setSlot(slot, DateQuests.getInstance().getNbtAPIController().translateLore(getInventory().getItem(slot), event, index));
     }
 
     public void setSlot(int slot, ItemStack is) {

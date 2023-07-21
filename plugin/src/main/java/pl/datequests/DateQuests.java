@@ -10,6 +10,7 @@ import pl.datequests.data.DataHandler;
 import pl.datequests.data.MessagesManager;
 import pl.datequests.events.Events;
 import pl.datequests.gui.GUIManager;
+import pl.datequests.nbtapi.NBTAPIController;
 import pl.datequests.permissions.PermissionManager;
 import pl.datequests.placeholders.PlaceholderController;
 import pl.datequests.quests.QuestsManager;
@@ -26,6 +27,7 @@ public final class DateQuests extends JavaPlugin {
     private PermissionManager permissionManager;
     private CitizensController citizensController;
     private PlaceholderController placeholderController;
+    private NBTAPIController nbtAPIController;
     private DataHandler dataHandler;
     private Commands commands;
     private CommandHelper commandHelper;
@@ -52,6 +54,12 @@ public final class DateQuests extends JavaPlugin {
             getLogger().info("Found PlaceholderAPI!");
             this.placeholderController = new PlaceholderController();
             placeholderController.register();
+        }
+        if(getServer().getPluginManager().getPlugin("NBTAPI") == null) {
+            getLogger().info("Not found NBTAPI!");
+        } else {
+            getLogger().info("Found NBTAPI!");
+            this.nbtAPIController = new NBTAPIController();
         }
         this.dataHandler = new DataHandler();
         this.commands = new Commands();
@@ -87,6 +95,10 @@ public final class DateQuests extends JavaPlugin {
 
     public boolean isUsingPlaceholders() {
         return (placeholderController != null);
+    }
+
+    public boolean isUsingNBTAPI() {
+        return (nbtAPIController != null);
     }
 
 }

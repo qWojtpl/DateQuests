@@ -2,6 +2,10 @@ package pl.datequests.quests;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.TranslatableComponent;
 import pl.datequests.DateQuests;
 import pl.datequests.data.MessagesManager;
 
@@ -29,12 +33,10 @@ public class Quest {
 
     public String getTranslatedEvent() {
         MessagesManager messages = DateQuests.getInstance().getMessagesManager();
-        String returnable = event;
-        returnable = returnable
+        return event
                 .replaceFirst("kill", messages.getMessage("eventKill"))
                 .replaceFirst("break", messages.getMessage("eventBreak"))
                 .replaceFirst("deliver", messages.getMessage("eventDeliver"));
-        return returnable;
     }
 
     public void setEvent(String event) {
