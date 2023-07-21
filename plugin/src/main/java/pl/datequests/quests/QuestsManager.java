@@ -529,6 +529,7 @@ public class QuestsManager {
 
     public void checkTags() {
         String newTag = plugin.getDateManager().getFormattedDate("%Y/%M/%D");
+        boolean updateTags = false;
         for(QuestSchema schema : questSchemas) {
             if(newTag.equals(schema.getDateTag())) {
                 continue;
@@ -569,6 +570,18 @@ public class QuestsManager {
             if(changedTag) {
                 schema.setTagID(schema.getTagID() + 1);
                 plugin.getDataHandler().saveSchemaTags(schema);
+                updateTags = true;
+            }
+        }
+        if(updateTags) {
+            updateAllTags();
+        }
+    }
+
+    public void updateAllTags() {
+        for(String player : quests.keySet()) {
+            for(Quest quest : quests.get(player)) {
+                quest.updateTagID();
             }
         }
     }
