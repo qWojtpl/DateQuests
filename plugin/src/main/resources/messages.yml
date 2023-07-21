@@ -25,6 +25,8 @@ messages:
   nextPageLore: "&aGo to next page"
   previousPage: "&f&lPrevious page"
   previousPageLore: "&aGo to previous page"
+  backToCategory: "&6&lBack to category"
+  backToCategoryLore: "&aGet back to the quests!"
   rewards: "&6&lRewards"
   rewardsLore: "&aGet your rewards!"
   receiveReward: "&a&lCLICK TO RECEIVE"

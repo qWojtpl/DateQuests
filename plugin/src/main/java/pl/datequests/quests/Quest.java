@@ -2,10 +2,6 @@ package pl.datequests.quests;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.TranslatableComponent;
 import pl.datequests.DateQuests;
 import pl.datequests.data.MessagesManager;
 

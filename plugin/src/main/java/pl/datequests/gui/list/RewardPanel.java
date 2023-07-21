@@ -17,9 +17,11 @@ public class RewardPanel extends PluginGUI {
     private List<Integer> itemSlots;
     private int currentOffset;
     private int receiveTask = -1;
+    private final int sourceIndex;
 
-    public RewardPanel(Player owner, String inventoryName) {
+    public RewardPanel(Player owner, String inventoryName, int sourceIndex) {
         super(owner, inventoryName, 54);
+        this.sourceIndex = sourceIndex;
     }
 
     @Override
@@ -41,6 +43,8 @@ public class RewardPanel extends PluginGUI {
                 slots.add(i);
             }
         }
+        setSlot(0, Material.DARK_OAK_DOOR, getMessages().getMessage("backToCategory"),
+                getLore(getMessages().getMessage("backToCategoryLore")));
         setSlot(46, Material.ARROW, getMessages().getMessage("previousPage"),
                 getLore(getMessages().getMessage("previousPageLore")));
         setSlot(49, Material.CHEST, getMessages().getMessage("receiveAllRewards"),
@@ -55,6 +59,9 @@ public class RewardPanel extends PluginGUI {
         if(itemSlots.contains(slot)) {
             getQuestsManager().receiveReward(getOwner().getName(), itemSlots.indexOf(slot) + currentOffset);
             loadRewards();
+        } else if(slot == 0) {
+            closeInventory();
+            new QuestPanel(getOwner(), getInventoryName(), sourceIndex);
         } else if(slot == 46) {
             previousPage();
         } else if(slot == 49) {

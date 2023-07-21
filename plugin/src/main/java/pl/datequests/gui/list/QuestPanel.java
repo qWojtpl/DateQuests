@@ -91,7 +91,7 @@ public class QuestPanel extends PluginGUI {
             }
         } else if(slot == 18) {
             closeInventory();
-            new RewardPanel(getOwner(), getInventoryName());
+            new RewardPanel(getOwner(), getInventoryName(), questIndex);
         } else if(slot == 27) {
             changeEvent();
         } else if(slot == 47) {
