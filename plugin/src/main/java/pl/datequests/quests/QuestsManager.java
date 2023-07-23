@@ -365,16 +365,15 @@ public class QuestsManager {
             return Material.BEDROCK;
         }
         Material m = Material.getMaterial(split[2].toUpperCase());
-        if(m == null) {
-            if(split[0].equalsIgnoreCase("kill") || split[0].equalsIgnoreCase(messages.getMessage("eventKill"))) {
-                m = Material.getMaterial(split[2].toUpperCase() + "_SPAWN_EGG");
-                if(m == null) {
-                    m = Material.BEDROCK;
-                }
-            } else {
+        if(split[0].equalsIgnoreCase("kill") || split[0].equalsIgnoreCase(messages.getMessage("eventKill"))) {
+            m = Material.getMaterial(split[2].toUpperCase() + "_SPAWN_EGG");
+            if(m == null) {
                 m = Material.BEDROCK;
                 plugin.getLogger().severe("Event: " + event + " is incorrect.");
             }
+        } else if(m == null) {
+            m = Material.BEDROCK;
+            plugin.getLogger().severe("Event: " + event + " is incorrect.");
         }
         return m;
     }
