@@ -5,7 +5,7 @@
 #  | |__| / ____ \| |  | |___| |__| | |__| | |____ ____) |  | |  ____) |
 #  |_____/_/    \_\_|  |______\___\_\\____/|______|_____/   |_| |_____/
 #
-# Version: 1.0.0
+# Version: 1.0.4
 # Author: Assasin98980
 #
 
@@ -35,7 +35,6 @@ config:
   # Leaderboard is not updating every update. This could cause performance issues.
   # In default, leaderboard will update every 30 seconds.
   leaderboardUpdateInterval: 30
-
 
 npc:
   # This section requires Citizens plugin.
@@ -89,7 +88,12 @@ quests:
           material: DIAMOND
           amount: 1
 
-everythingInMonthReward:
+# Special reward will be assigned to player
+# when player will complete minimumCompletePercentage percent of
+# quests in all categories. Player must complete at least one quest
+# in last day of month.
+specialReward:
+  minimumCompletedPercentage: 90
   rewardType: ALL
   items:
     0:

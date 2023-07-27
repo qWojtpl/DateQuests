@@ -74,6 +74,8 @@ public class QuestPanel extends PluginGUI {
                     MessageFormat.format(getMessages().getMessage("changeQuestLore"), name, changeItem.getAmount())
             ));
         }
+        setSlot(36, Material.DARK_OAK_DOOR, getMessages().getMessage("backToCategory"),
+                getLore(getMessages().getMessage("backToCategoryLore")));
         setSlot(47, Material.ARROW, getMessages().getMessage("previousPage"),
                 getLore(getMessages().getMessage("previousPageLore")));
         setSlot(53, Material.ARROW, getMessages().getMessage("nextPage"),
@@ -94,6 +96,9 @@ public class QuestPanel extends PluginGUI {
             new RewardPanel(getOwner(), getInventoryName(), questIndex);
         } else if(slot == 27) {
             changeEvent();
+        } else if(slot == 36) {
+            closeInventory();
+            new QuestList(getOwner(), getInventoryName());
         } else if(slot == 47) {
             previousPage();
         } else if(slot == 50) {

@@ -92,7 +92,7 @@ public class ItemLoader {
                 i++;
                 continue;
             }
-            if(im instanceof SkullMeta) {
+            if(im instanceof SkullMeta || im.getPersistentDataContainer().getKeys().size() > 0) {
                 yml.set(currentPath + "loadMeta", true);
                 yml.set(currentPath + "meta", im);
                 i++;

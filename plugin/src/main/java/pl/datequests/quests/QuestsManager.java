@@ -26,10 +26,13 @@ public class QuestsManager {
     private final List<QuestSchema> questSchemas = new ArrayList<>();
     private final HashMap<String, List<Quest>> quests = new HashMap<>();
     private final HashMap<String, List<ItemStack>> rewards = new HashMap<>();
+    private HashMap<String, List<Integer>> specialRewardReceived = new HashMap<>();
     @Setter
-    private List<ItemStack> rewardForAll = new ArrayList<>();
+    private List<ItemStack> specialReward = new ArrayList<>();
     @Setter
-    private RewardType rewardForAllType;
+    private RewardType specialRewardType;
+    @Setter
+    private double specialRewardPercentage = 90;
     private int dateCheckTask = -1;
 
     public void addQuestSchema(QuestSchema schema) {
@@ -50,7 +53,12 @@ public class QuestsManager {
                 p.sendMessage("§6{========================}");
                 p.sendMessage(" ");
                 p.sendMessage(" " + messages.getMessage("completed") + "§2" + questSchema.getSchemaName());
-                p.sendMessage(" §2" + quest.getTranslatedEvent());
+                if(!plugin.isUsingNBTAPI()) {
+                    p.sendMessage(" §2" + quest.getTranslatedEvent());
+                } else {
+                    plugin.getNbtAPIController().sendTranslatedEvent(p, " ", quest.getTranslatedEvent(), "");
+                    plugin.getNbtAPIController().sendTranslatedSubtitle(p, quest.getTranslatedEvent());
+                }
                 p.sendMessage(" " + MessageFormat.format(messages.getMessage("progress"),
                         quest.getProgress(),
                         quest.getRequiredProgress()));
@@ -65,9 +73,15 @@ public class QuestsManager {
                     }
                     p.sendMessage(" " + messages.getMessage("newAssignedReward"));
                 }
-                if(isCompletedAllQuests(player) && rewardForAll.size() != 0) {
-                    p.sendMessage(" " + messages.getMessage("assignedMonthReward"));
-                    assignMonthReward(player);
+                if(isCanTakeSpecialReward(player) && specialReward.size() != 0) {
+                    if(!specialRewardReceived.getOrDefault(player, new ArrayList<>()).contains(plugin.getDateManager().getMonth())) {
+                        p.sendMessage(" " + messages.getMessage("assignedSpecialReward"));
+                        assignSpecialReward(player);
+                        List<Integer> list = specialRewardReceived.getOrDefault(player, new ArrayList<>());
+                        list.add(plugin.getDateManager().getMonth());
+                        specialRewardReceived.put(player, list);
+                        plugin.getDataHandler().saveReceivedSpecialReward(player, plugin.getDateManager().getMonth());
+                    }
                 }
                 p.sendMessage(" ");
                 p.sendMessage("§6{========================}");
@@ -95,10 +109,10 @@ public class QuestsManager {
         rewards.put(player, playerRewards);
     }
 
-    public void assignMonthReward(String player) {
+    public void assignSpecialReward(String player) {
         DateManager dateManager = plugin.getDateManager();
-        if(rewardForAllType.equals(RewardType.ALL)) {
-            for(ItemStack is : rewardForAll) {
+        if(specialRewardType.equals(RewardType.ALL)) {
+            for(ItemStack is : specialReward) {
                 ItemMeta im = is.getItemMeta();
                 if(im != null) {
                     im.setDisplayName(im.getDisplayName()
@@ -120,23 +134,25 @@ public class QuestsManager {
                 }
                 assignReward(player, is);
             }
-        } else if(rewardForAllType.equals(RewardType.RANDOM)) {
-            if(rewardForAll.size() == 0) {
+        } else if(specialRewardType.equals(RewardType.RANDOM)) {
+            if(specialReward.size() == 0) {
                 return;
             }
-            ItemStack is = rewardForAll.get(RandomNumber.randomInt(0, rewardForAll.size() - 1));
+            ItemStack is = specialReward.get(RandomNumber.randomInt(0, specialReward.size() - 1));
             ItemMeta im = is.getItemMeta();
             if(im != null) {
                 im.setDisplayName(im.getDisplayName()
                         .replace("%year%", dateManager.getFormattedDate("%Y"))
-                        .replace("%month%", dateManager.getFormattedDate("%M")));
+                        .replace("%month%", dateManager.getFormattedDate("%M"))
+                        .replace("%monthname%", messages.getMessage("month" + dateManager.getMonthName())));
                 if(im.getLore() != null) {
                     List<String> lore = im.getLore();
                     List<String> newLore = new ArrayList<>();
                     for(String line : lore) {
                         newLore.add(line
                                 .replace("%year%", dateManager.getFormattedDate("%Y"))
-                                .replace("%month%", dateManager.getFormattedDate("%M")));
+                                .replace("%month%", dateManager.getFormattedDate("%M"))
+                                .replace("%monthname%", messages.getMessage("month" + dateManager.getMonthName())));
                     }
                     im.setLore(newLore);
                 }
@@ -245,32 +261,36 @@ public class QuestsManager {
         return split[0].equalsIgnoreCase(event) && split[2].equalsIgnoreCase(subject);
     }
 
-    public boolean isCompletedAllQuests(String player) {
+    public boolean isCanTakeSpecialReward(String player) {
         DateManager dateManager = plugin.getDateManager();
         if(!dateManager.getFormattedDate("%Y/%M/%D").equals(dateManager.getFormattedDate("%Y/%M/" + dateManager.getDaysOfMonth()))) {
             return false;
         }
+        double completed = 0;
+        double all = 0;
         for(QuestSchema schema : questSchemas) {
-            String month = plugin.getDateManager().getFormattedDate("%Y/%M");
+            String month = dateManager.getFormattedDate("%Y/%M");
             if(!schema.getMonthTags().containsKey(month)) {
                 continue;
             }
             List<Integer> monthTags = schema.getMonthTags().get(month);
+            all += monthTags.size();
             List<Quest> playerQuests = getPlayersQuestsBySchema(player, schema);
             for(int tag : monthTags) {
-                boolean found = false;
                 for(Quest q : playerQuests) {
                     if(q.getTagID() == tag && q.getQuestState().equals(QuestState.COMPLETED)) {
-                        found = true;
+                        completed++;
                         break;
                     }
                 }
-                if(!found) {
-                    return false;
-                }
             }
         }
-        return true;
+        if(all == 0) {
+            return false;
+        }
+        plugin.getLogger().info(completed + ": completed");
+        plugin.getLogger().info(all + ": all");
+        return (completed/all) * 100 >= specialRewardPercentage;
     }
 
     public List<ItemStack> getPlayersRewards(String player) {
@@ -367,11 +387,8 @@ public class QuestsManager {
         Material m = Material.getMaterial(split[2].toUpperCase());
         if(split[0].equalsIgnoreCase("kill") || split[0].equalsIgnoreCase(messages.getMessage("eventKill"))) {
             m = Material.getMaterial(split[2].toUpperCase() + "_SPAWN_EGG");
-            if(m == null) {
-                m = Material.BEDROCK;
-                plugin.getLogger().severe("Event: " + event + " is incorrect.");
-            }
-        } else if(m == null) {
+        }
+        if(m == null) {
             m = Material.BEDROCK;
             plugin.getLogger().severe("Event: " + event + " is incorrect.");
         }

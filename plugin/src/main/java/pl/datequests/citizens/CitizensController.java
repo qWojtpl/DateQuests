@@ -38,7 +38,8 @@ public class CitizensController implements Listener {
             plugin.getCommands().openGUI(p);
             return;
         }
-        String itemType = playerItem.getType().name();
+        Material itemType = playerItem.getType();
+        String itemTypeString = itemType.name();
         boolean found = false;
         int deliverAmount = 0;
         for(Quest q : questsManager.getPlayersActiveQuests(player)) {
@@ -53,7 +54,11 @@ public class CitizensController implements Listener {
             }
             p.sendMessage("§6{========================}");
             p.sendMessage(" ");
-            p.sendMessage(" " + messages.getMessage("deliveredItem") + itemType + " §ax§2" + deliverAmount);
+            if(!plugin.isUsingNBTAPI()) {
+                p.sendMessage(" " + messages.getMessage("deliveredItem") + itemTypeString + " §ax§2" + deliverAmount);
+            } else {
+                plugin.getNbtAPIController().sendTranslatedItem(p, itemType, deliverAmount);
+            }
             p.sendMessage(" ");
             p.sendMessage("§6{========================}");
             p.updateInventory();

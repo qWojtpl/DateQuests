@@ -35,7 +35,7 @@ public class DataHandler {
 
     public void loadConfig() {
         questsManager.getQuestSchemas().clear();
-        questsManager.getRewardForAll().clear();
+        questsManager.getSpecialReward().clear();
         YamlConfiguration yml = YamlConfiguration.loadConfiguration(getConfigFile());
         loadAllPlayers = yml.getBoolean("config.loadAllPlayers");
         saveInterval = yml.getInt("config.saveInterval", 10);
@@ -68,7 +68,7 @@ public class DataHandler {
                 schema.setSchemaName(questName);
                 QuestInterval interval;
                 try {
-                    interval = QuestInterval.valueOf(yml.getString(path + "interval"));
+                    interval = QuestInterval.valueOf(yml.getString(path + "interval", "DAY"));
                 } catch(IllegalArgumentException e) {
                     plugin.getLogger().severe(
                             "Cannot compare " + yml.getString(path + "interval") + " with a correct quest interval!");
@@ -96,7 +96,7 @@ public class DataHandler {
                 schema.setChangeable(yml.getBoolean(path + "changeable"));
                 schema.setRewards(ItemLoader.getItemStackList(yml, path + "rewards.items"));
                 RewardType rewardType = RewardType.ALL;
-                String rewardTypeStr = yml.getString(path + "rewards.rewardType");
+                String rewardTypeStr = yml.getString(path + "rewards.rewardType", "ALL");
                 try {
                     rewardType = RewardType.valueOf(rewardTypeStr);
                 } catch(IllegalArgumentException e) {
@@ -108,15 +108,16 @@ public class DataHandler {
             }
         }
         RewardType rewardType = RewardType.ALL;
-        String rewardTypeStr = yml.getString("everythingInMonthReward.rewardType");
+        String rewardTypeStr = yml.getString("specialReward.rewardType", "ALL");
         try {
             rewardType = RewardType.valueOf(rewardTypeStr);
         } catch(IllegalArgumentException e) {
             plugin.getLogger().severe(rewardTypeStr +
                     " is not correct RewardType! Correct RewardType is RANDOM or ALL. Replacing with ALL...");
         }
-        questsManager.setRewardForAllType(rewardType);
-        questsManager.setRewardForAll(ItemLoader.getItemStackList(yml, "everythingInMonthReward.items"));
+        questsManager.setSpecialRewardType(rewardType);
+        questsManager.setSpecialReward(ItemLoader.getItemStackList(yml, "specialReward.items"));
+        questsManager.setSpecialRewardPercentage(yml.getDouble("specialReward.minimumCompletedPercentage"));
     }
 
     public void loadData() {
@@ -208,6 +209,7 @@ public class DataHandler {
                 questsManager.assignQuest(nickname, q);
             }
         }
+        questsManager.getSpecialRewardReceived().put(nickname, data.getIntegerList("players." + nickname + ".--specialRewards"));
         ConfigurationSection rewardSection = data.getConfigurationSection("players." + nickname + ".--rewards");
         if(rewardSection == null) {
             return;
@@ -259,7 +261,9 @@ public class DataHandler {
         data.set(path + "tagID", schema.getTagID());
         path = "monthTags." + schema.getSchemaName() + "." + plugin.getDateManager().getFormattedDate("%Y/%M");
         List<Integer> list = data.getIntegerList(path);
-        list.add(schema.getTagID());
+        if(!list.contains(schema.getTagID())) {
+            list.add(schema.getTagID());
+        }
         data.set(path, list);
     }
 
@@ -280,6 +284,15 @@ public class DataHandler {
 
     public void saveLastPlayerGroup(String player, QuestSchema schema, int group) {
         data.set("players." + player + "." + schema.getSchemaName() + ".--lastGroup", group);
+    }
+
+    public void saveReceivedSpecialReward(String player, int month) {
+        String path = "players." + player + ".--specialRewards";
+        List<Integer> list = data.getIntegerList(path);
+        if(!list.contains(month)) {
+            list.add(month);
+        }
+        data.set(path, list);
     }
 
     public void savePlayerRewards(String player) {

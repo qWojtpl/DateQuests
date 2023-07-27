@@ -11,6 +11,7 @@ import org.bukkit.entity.Egg;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import pl.datequests.DateQuests;
+import pl.datequests.data.MessagesManager;
 
 import javax.annotation.Nullable;
 
@@ -58,7 +59,20 @@ public class NBTAPIController {
         BaseComponent[] components = new BaseComponent[]{
                 new TextComponent(prefix + split[0] + " " + split[1] + " "),
                 new TranslatableComponent(translationKey),
-                new TranslatableComponent(suffix)
+                new TextComponent(suffix)
+        };
+        for(BaseComponent component : components) {
+            component.setColor(ChatColor.DARK_GREEN);
+        }
+        player.spigot().sendMessage(components);
+    }
+
+    public void sendTranslatedItem(Player player, Material material, int amount) {
+        String translationKey = material.getTranslationKey();
+        BaseComponent[] components = new BaseComponent[]{
+                new TextComponent(" " + plugin.getMessagesManager().getMessage("deliveredItem")),
+                new TranslatableComponent(translationKey),
+                new TextComponent(" §ax§2" + amount)
         };
         for(BaseComponent component : components) {
             component.setColor(ChatColor.DARK_GREEN);
