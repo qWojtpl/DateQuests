@@ -288,8 +288,6 @@ public class QuestsManager {
         if(all == 0) {
             return false;
         }
-        plugin.getLogger().info(completed + ": completed");
-        plugin.getLogger().info(all + ": all");
         return (completed/all) * 100 >= specialRewardPercentage;
     }
 

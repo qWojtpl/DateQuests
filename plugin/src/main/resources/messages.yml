@@ -48,6 +48,7 @@ messages:
   changedQuest: "&eChanged quest: "
   completed: "&eQuest completed: "
   statsName: "&6&lStats"
+  statsPercentCompleted: "&aCompleted quests in this month: &2"
   statsCompleted: "&aCompleted quests in this category: &2"
   statsAssigned: "&aQuests assigned in this category: &2"
   statsAllCompleted: "&aAll completed quests: &2"

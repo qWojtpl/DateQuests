@@ -4,6 +4,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import pl.datequests.DateQuests;
 import pl.datequests.gui.PluginGUI;
 import pl.datequests.gui.SortType;
 import pl.datequests.quests.*;
@@ -51,9 +52,33 @@ public class QuestPanel extends PluginGUI {
         } else if(!questSchema.getQuestInterval().equals(QuestInterval.DAY)) {
             assign = getMessages().getMessage("day" + questSchema.getQuestInterval().name());
         }
+        double completedQuests = 0;
+        double allQuests = 0;
+        for(QuestSchema schema : getQuestsManager().getQuestSchemas()) {
+            String month = DateQuests.getInstance().getDateManager().getFormattedDate("%Y/%M");
+            if(!schema.getMonthTags().containsKey(month)) {
+                continue;
+            }
+            List<Integer> monthTags = schema.getMonthTags().get(month);
+            allQuests += monthTags.size();
+            List<Quest> playerQuests = getQuestsManager().getPlayersQuestsBySchema(getOwner().getName(), schema);
+            for(int tag : monthTags) {
+                for(Quest q : playerQuests) {
+                    if(q.getTagID() == tag && q.getQuestState().equals(QuestState.COMPLETED)) {
+                        completedQuests++;
+                        break;
+                    }
+                }
+            }
+        }
+        if(allQuests == 0) {
+            allQuests = 1;
+        }
+        int percent = (int) (completedQuests / allQuests * 100);
         setSlot(0, Material.BOOK, getMessages().getMessage("questAssign"),
                 getLore(getMessages().getMessage("questAssignLore") + assign));
         setSlot(9, Material.OAK_SIGN, getMessages().getMessage("statsName"), getLore(
+                getMessages().getMessage("statsPercentCompleted") + percent + "%",
                 getMessages().getMessage("statsCompleted") + completed,
                 getMessages().getMessage("statsAllCompleted") + allCompleted,
                 getMessages().getMessage("statsAssigned") +
