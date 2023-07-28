@@ -259,11 +259,13 @@ public class DataHandler {
         String path = "schema." + schema.getSchemaName() + ".";
         data.set(path + "dateTag", schema.getDateTag());
         data.set(path + "tagID", schema.getTagID());
-        path = "monthTags." + schema.getSchemaName() + "." + plugin.getDateManager().getFormattedDate("%Y/%M");
+        String date = plugin.getDateManager().getFormattedDate("%Y/%M");
+        path = "monthTags." + schema.getSchemaName() + "." + date;
         List<Integer> list = data.getIntegerList(path);
         if(!list.contains(schema.getTagID())) {
             list.add(schema.getTagID());
         }
+        schema.getMonthTags().put(date, list);
         data.set(path, list);
     }
 
