@@ -68,7 +68,7 @@ public class Quest {
     }
 
     public void updateTagID() {
-        if(this.tagID < questSchema.getTagID()) {
+        if(this.tagID < questSchema.getTagID() && !questState.equals(QuestState.COMPLETED)) {
             this.questState = QuestState.NOT_ACTIVE;
         }
     }
