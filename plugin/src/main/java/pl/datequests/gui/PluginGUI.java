@@ -2,6 +2,7 @@ package pl.datequests.gui;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -127,6 +128,9 @@ public abstract class PluginGUI {
     public void setGUIUpdating(boolean updating) {
         this.updating = updating;
         if(updating) {
+            if(updateTask != -1) {
+                return;
+            }
             updateTask = DateQuests.getInstance().getServer().getScheduler().scheduleSyncRepeatingTask(
                     DateQuests.getInstance(), this::onUpdate, 0L, updateInterval);
         } else {
@@ -134,6 +138,7 @@ public abstract class PluginGUI {
                 return;
             }
             DateQuests.getInstance().getServer().getScheduler().cancelTask(updateTask);
+            updateTask = -1;
         }
     }
 

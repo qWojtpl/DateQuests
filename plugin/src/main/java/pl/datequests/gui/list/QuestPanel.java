@@ -1,5 +1,6 @@
 package pl.datequests.gui.list;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -216,7 +217,10 @@ public class QuestPanel extends PluginGUI {
             return;
         }
         getOwner().playSound(getOwner(), Sound.ITEM_BOOK_PAGE_TURN, 1.0F, 1.0F);
-        currentOffset += 36;
+        currentOffset += 35;
+        if(getQuestsManager().isPlayerCanTakeQuest(getOwner().getName(), questSchema)) {
+            currentOffset -= 1;
+        }
         loadQuests();
     }
 
@@ -226,7 +230,10 @@ public class QuestPanel extends PluginGUI {
             return;
         }
         getOwner().playSound(getOwner(), Sound.ITEM_BOOK_PAGE_TURN, 1.0F, 1.0F);
-        currentOffset -= 36;
+        currentOffset -= 35;
+        if(getQuestsManager().isPlayerCanTakeQuest(getOwner().getName(), questSchema)) {
+            currentOffset += 1;
+        }
         loadQuests();
     }
 
