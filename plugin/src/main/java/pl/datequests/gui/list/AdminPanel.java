@@ -97,12 +97,14 @@ public class AdminPanel extends PluginGUI {
     }
 
     public void loadQuestsPage() {
+        currentOffset = 0;
         pageID = 1;
         loadFrame();
         loadQuests();
     }
 
     public void loadQuests() {
+        loadFrame();
         List<Quest> playerQuests = getQuestsManager().reverseList(getQuestsManager().getPlayersQuests(lookupPlayer));
         int i = 0;
         int j = 0;
@@ -148,12 +150,14 @@ public class AdminPanel extends PluginGUI {
     }
 
     public void loadRewardsPage() {
+        currentOffset = 0;
         pageID = 2;
         loadFrame();
         loadRewards();
     }
 
     public void loadRewards() {
+        loadFrame();
         List<ItemStack> playerRewards = getQuestsManager().getPlayersRewards(lookupPlayer);
         int i = 0;
         int j = 0;
@@ -190,7 +194,6 @@ public class AdminPanel extends PluginGUI {
         rewardSlots.clear();
         slots.clear();
         fillWith(Material.BLACK_STAINED_GLASS_PANE);
-        currentOffset = 0;
         int[] protectedSlots = new int[]{17, 18, 26, 27, 35, 36, 44};
         for(int i = 10; i < 45; i++) {
             boolean isProtected = false;
@@ -212,13 +215,18 @@ public class AdminPanel extends PluginGUI {
     }
 
     private void nextPage() {
-        if(getQuestsManager().getPlayersQuests(getOwner().getName()).size() - 1 < currentOffset + 36) {
+        if((pageID == 1 && getQuestsManager().getPlayersQuests(getOwner().getName()).size() - 1 < currentOffset + 28)
+                || (pageID == 2 && getQuestsManager().getPlayersRewards(getOwner().getName()).size() - 1 < currentOffset + 28)) {
             getOwner().playSound(getOwner(), Sound.ENTITY_VILLAGER_NO, 1.0F, 1.5F);
             return;
         }
         getOwner().playSound(getOwner(), Sound.ITEM_BOOK_PAGE_TURN, 1.0F, 1.0F);
-        currentOffset += 36;
-        loadQuests();
+        currentOffset += 28;
+        if(pageID == 1) {
+            loadQuests();
+        } else {
+            loadRewards();
+        }
     }
 
     private void previousPage() {
@@ -227,8 +235,12 @@ public class AdminPanel extends PluginGUI {
             return;
         }
         getOwner().playSound(getOwner(), Sound.ITEM_BOOK_PAGE_TURN, 1.0F, 1.0F);
-        currentOffset -= 36;
-        loadQuests();
+        currentOffset -= 28;
+        if(pageID == 1) {
+            loadQuests();
+        } else {
+            loadRewards();
+        }
     }
 
 }

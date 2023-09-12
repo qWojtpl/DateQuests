@@ -19,6 +19,12 @@
 
 `%nl% - new line`<br>
 
+<details><summary>config.yml</summary>
+
+
+
+</details>
+
 # Commands & Permissions
 
 `/dq`                                - Shows available quest categories<br> 
