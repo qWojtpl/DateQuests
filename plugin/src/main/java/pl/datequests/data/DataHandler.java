@@ -4,6 +4,8 @@ import lombok.Getter;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import pl.beaverlib.data.ItemLoader;
+import pl.beaverlib.util.DateManager;
 import pl.datequests.DateQuests;
 import pl.datequests.permissions.PermissionManager;
 import pl.datequests.quests.*;
@@ -259,7 +261,7 @@ public class DataHandler {
         String path = "schema." + schema.getSchemaName() + ".";
         data.set(path + "dateTag", schema.getDateTag());
         data.set(path + "tagID", schema.getTagID());
-        String date = plugin.getDateManager().getFormattedDate("%Y/%M");
+        String date = DateManager.getFormattedDate("%Y/%M");
         path = "monthTags." + schema.getSchemaName() + "." + date;
         List<Integer> list = data.getIntegerList(path);
         if(!list.contains(schema.getTagID())) {

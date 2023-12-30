@@ -9,21 +9,17 @@ import pl.datequests.commands.Commands;
 import pl.datequests.data.DataHandler;
 import pl.datequests.data.MessagesManager;
 import pl.datequests.events.Events;
-import pl.datequests.gui.GUIManager;
 import pl.datequests.nbtapi.NBTAPIController;
 import pl.datequests.permissions.PermissionManager;
 import pl.datequests.placeholders.PlaceholderController;
 import pl.datequests.quests.QuestsManager;
-import pl.datequests.util.DateManager;
 
 @Getter
 public final class DateQuests extends JavaPlugin {
 
     private static DateQuests main;
-    private DateManager dateManager;
     private MessagesManager messagesManager;
     private QuestsManager questsManager;
-    private GUIManager guiManager;
     private PermissionManager permissionManager;
     private CitizensController citizensController;
     private PlaceholderController placeholderController;
@@ -36,10 +32,8 @@ public final class DateQuests extends JavaPlugin {
     @Override
     public void onEnable() {
         main = this;
-        this.dateManager = new DateManager();
         this.messagesManager = new MessagesManager();
         this.questsManager = new QuestsManager();
-        this.guiManager = new GUIManager();
         this.permissionManager = new PermissionManager();
         if(getServer().getPluginManager().getPlugin("Citizens") == null) {
             getLogger().info("Not found Citizens plugin!");
@@ -78,9 +72,6 @@ public final class DateQuests extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        if(guiManager != null) {
-            guiManager.closeAllInventories();
-        }
         dataHandler.save();
         getLogger().info("Disabled.");
     }

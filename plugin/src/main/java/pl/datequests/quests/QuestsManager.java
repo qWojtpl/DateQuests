@@ -7,11 +7,11 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import pl.beaverlib.util.DateManager;
+import pl.beaverlib.util.PlayerUtil;
 import pl.datequests.DateQuests;
 import pl.datequests.data.MessagesManager;
 import pl.datequests.gui.SortType;
-import pl.datequests.util.DateManager;
-import pl.datequests.util.PlayerUtil;
 import pl.datequests.util.RandomNumber;
 
 import javax.annotation.Nullable;
@@ -26,7 +26,7 @@ public class QuestsManager {
     private final List<QuestSchema> questSchemas = new ArrayList<>();
     private final HashMap<String, List<Quest>> quests = new HashMap<>();
     private final HashMap<String, List<ItemStack>> rewards = new HashMap<>();
-    private HashMap<String, List<Integer>> specialRewardReceived = new HashMap<>();
+    private final HashMap<String, List<Integer>> specialRewardReceived = new HashMap<>();
     @Setter
     private List<ItemStack> specialReward = new ArrayList<>();
     @Setter
@@ -74,13 +74,13 @@ public class QuestsManager {
                     p.sendMessage(" " + messages.getMessage("newAssignedReward"));
                 }
                 if(isCanTakeSpecialReward(player) && specialReward.size() != 0) {
-                    if(!specialRewardReceived.getOrDefault(player, new ArrayList<>()).contains(plugin.getDateManager().getMonth())) {
+                    if(!specialRewardReceived.getOrDefault(player, new ArrayList<>()).contains(DateManager.getMonth())) {
                         p.sendMessage(" " + messages.getMessage("assignedSpecialReward"));
                         assignSpecialReward(player);
                         List<Integer> list = specialRewardReceived.getOrDefault(player, new ArrayList<>());
-                        list.add(plugin.getDateManager().getMonth());
+                        list.add(DateManager.getMonth());
                         specialRewardReceived.put(player, list);
-                        plugin.getDataHandler().saveReceivedSpecialReward(player, plugin.getDateManager().getMonth());
+                        plugin.getDataHandler().saveReceivedSpecialReward(player, DateManager.getMonth());
                     }
                 }
                 p.sendMessage(" ");
@@ -110,23 +110,22 @@ public class QuestsManager {
     }
 
     public void assignSpecialReward(String player) {
-        DateManager dateManager = plugin.getDateManager();
         if(specialRewardType.equals(RewardType.ALL)) {
             for(ItemStack is : specialReward) {
                 ItemMeta im = is.getItemMeta();
                 if(im != null) {
                     im.setDisplayName(im.getDisplayName()
-                            .replace("%year%", dateManager.getFormattedDate("%Y"))
-                            .replace("%month%", dateManager.getFormattedDate("%M"))
-                            .replace("%monthname%", messages.getMessage("month" + dateManager.getMonthName())));
+                            .replace("%year%", DateManager.getFormattedDate("%Y"))
+                            .replace("%month%", DateManager.getFormattedDate("%M"))
+                            .replace("%monthname%", messages.getMessage("month" + DateManager.getMonthName())));
                     if(im.getLore() != null) {
                         List<String> lore = im.getLore();
                         List<String> newLore = new ArrayList<>();
                         for(String line : lore) {
                             newLore.add(line
-                                    .replace("%year%", dateManager.getFormattedDate("%Y"))
-                                    .replace("%month%", dateManager.getFormattedDate("%M"))
-                                    .replace("%monthname%", messages.getMessage("month" + dateManager.getMonthName())));
+                                    .replace("%year%", DateManager.getFormattedDate("%Y"))
+                                    .replace("%month%", DateManager.getFormattedDate("%M"))
+                                    .replace("%monthname%", messages.getMessage("month" + DateManager.getMonthName())));
                         }
                         im.setLore(newLore);
                     }
@@ -142,17 +141,17 @@ public class QuestsManager {
             ItemMeta im = is.getItemMeta();
             if(im != null) {
                 im.setDisplayName(im.getDisplayName()
-                        .replace("%year%", dateManager.getFormattedDate("%Y"))
-                        .replace("%month%", dateManager.getFormattedDate("%M"))
-                        .replace("%monthname%", messages.getMessage("month" + dateManager.getMonthName())));
+                        .replace("%year%", DateManager.getFormattedDate("%Y"))
+                        .replace("%month%", DateManager.getFormattedDate("%M"))
+                        .replace("%monthname%", messages.getMessage("month" + DateManager.getMonthName())));
                 if(im.getLore() != null) {
                     List<String> lore = im.getLore();
                     List<String> newLore = new ArrayList<>();
                     for(String line : lore) {
                         newLore.add(line
-                                .replace("%year%", dateManager.getFormattedDate("%Y"))
-                                .replace("%month%", dateManager.getFormattedDate("%M"))
-                                .replace("%monthname%", messages.getMessage("month" + dateManager.getMonthName())));
+                                .replace("%year%", DateManager.getFormattedDate("%Y"))
+                                .replace("%month%", DateManager.getFormattedDate("%M"))
+                                .replace("%monthname%", messages.getMessage("month" + DateManager.getMonthName())));
                     }
                     im.setLore(newLore);
                 }
@@ -262,14 +261,13 @@ public class QuestsManager {
     }
 
     public boolean isCanTakeSpecialReward(String player) {
-        DateManager dateManager = plugin.getDateManager();
-        if(!dateManager.getFormattedDate("%Y/%M/%D").equals(dateManager.getFormattedDate("%Y/%M/" + dateManager.getDaysOfMonth()))) {
+        if(!DateManager.getFormattedDate("%Y/%M/%D").equals(DateManager.getFormattedDate("%Y/%M/" + DateManager.getDaysOfMonth()))) {
             return false;
         }
         double completed = 0;
         double all = 0;
         for(QuestSchema schema : questSchemas) {
-            String month = dateManager.getFormattedDate("%Y/%M");
+            String month = DateManager.getFormattedDate("%Y/%M");
             if(!schema.getMonthTags().containsKey(month)) {
                 continue;
             }
@@ -542,7 +540,7 @@ public class QuestsManager {
     }
 
     public void checkTags() {
-        String newTag = plugin.getDateManager().getFormattedDate("%Y/%M/%D");
+        String newTag = DateManager.getFormattedDate("%Y/%M/%D");
         boolean updateTags = false;
         for(QuestSchema schema : questSchemas) {
             if(newTag.equals(schema.getDateTag())) {
@@ -553,27 +551,27 @@ public class QuestsManager {
                 schema.setDateTag(newTag);
                 changedTag = true;
             } else if(QuestInterval.MONTH.equals(schema.getQuestInterval())) {
-                if(newTag.equals(plugin.getDateManager().getFormattedDate("%Y/%M/1"))) {
+                if(newTag.equals(DateManager.getFormattedDate("%Y/%M/1"))) {
                     schema.setDateTag(newTag);
                     changedTag = true;
                 } else if(schema.getDateTag() == null) {
-                    schema.setDateTag(plugin.getDateManager().getFormattedDate("%Y/%M/1"));
+                    schema.setDateTag(DateManager.getFormattedDate("%Y/%M/1"));
                     changedTag = true;
                 } else {
                     try {
-                        int currentMonth = Integer.parseInt(plugin.getDateManager().getFormattedDate("%M"));
-                        int currentYear = Integer.parseInt(plugin.getDateManager().getFormattedDate("%Y"));
+                        int currentMonth = Integer.parseInt(DateManager.getFormattedDate("%M"));
+                        int currentYear = Integer.parseInt(DateManager.getFormattedDate("%Y"));
                         String[] split = schema.getDateTag().split("/");
                         int lastRandomizedMonth = Integer.parseInt(split[1]);
                         int lastRandomizedYear = Integer.parseInt(split[0]);
                         if(currentMonth > lastRandomizedMonth && currentYear >= lastRandomizedYear) {
-                            schema.setDateTag(plugin.getDateManager().getFormattedDate("%Y/%M/1"));
+                            schema.setDateTag(DateManager.getFormattedDate("%Y/%M/1"));
                             changedTag = true;
                         }
                     } catch(NumberFormatException | IndexOutOfBoundsException ignored) {}
                 }
             } else {
-                if(plugin.getDateManager().getDayName().equalsIgnoreCase(schema.getQuestInterval().name())) {
+                if(DateManager.getDayName().equalsIgnoreCase(schema.getQuestInterval().name())) {
                     schema.setDateTag(newTag);
                     changedTag = true;
                 } else if(schema.getDateTag() == null) {
