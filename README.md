@@ -14,6 +14,7 @@
 # Installation
 
 <p>Put DateQuests.jar to your plugins folder and restart the server.</p>
+<p>Put BeaverLib.jar from <a href="https://github.com/qWojtpl/BeaverLib">BeaverLib repository</a>, this library is required!</p>
 
 # Configuration
 
